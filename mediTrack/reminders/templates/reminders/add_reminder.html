@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set a Reminder</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">  <!-- Flatpickr CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>  <!-- Flatpickr JS -->
+</head>
+<body>
+    <h2>Set a Reminder</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <label for="id_message">Message:</label>
+            {{ form.message }}  <!-- Field for the reminder message -->
+        </div>
+
+        <div>
+            <label for="id_remind_at">Remind At:</label>
+            {{ form.remind_at }}  <!-- DateTime field for the reminder time -->
+        </div>
+
+        <button type="submit">Add Reminder</button>
+    </form>
+
+    <script>
+        flatpickr("#id_remind_at", {
+            enableTime: true,        // Enables time selection
+            dateFormat: "Y-m-d H:i", // Sets the format to YYYY-MM-DD HH:MM (24-hour time format)
+        });
+    </script>
+</body>
+</html>
+
+{% endblock %}

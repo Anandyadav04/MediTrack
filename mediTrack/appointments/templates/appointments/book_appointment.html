@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% load custom_filters %}
+{% block content %}
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">Book an Appointment</h2>
+
+    <form method="post" id="appointment-form">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="doctor" class="form-label">Doctor</label>
+            {{ form.doctor|add_class:"form-select" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="appointment_date" class="form-label">Appointment Date</label>
+            {{ form.appointment_date|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="appointment_time" class="form-label">Appointment Time</label>
+            {{ form.appointment_time|add_class:"form-select" }}
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary btn-lg">Book Appointment</button>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    function updateAvailableTimes() {
+        const doctorId = document.getElementById('id_doctor').value;
+        const appointmentDate = document.getElementById('id_appointment_date').value;
+        const appointmentTimeField = document.getElementById('id_appointment_time');
+
+        console.log("Doctor ID:", doctorId, "Appointment Date:", appointmentDate); // Debugging
+
+        if (doctorId && appointmentDate) {
+            fetch("/update-times/", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ doctor_id: doctorId, appointment_date: appointmentDate })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Received API Response:", data);  // Debugging
+
+                appointmentTimeField.innerHTML = ""; // Clear dropdown
+                if (data.available_times && data.available_times.length > 0) {
+                    data.available_times.forEach(time => {
+                        let option = document.createElement('option');
+                        option.value = time;
+                        option.innerText = time;
+                        appointmentTimeField.appendChild(option);
+                    });
+                } else {
+                    console.log("No available times received from API.");
+                }
+            })
+            .catch(error => console.error("Error fetching times:", error));
+        }
+    }
+
+    document.getElementById('id_doctor').addEventListener('change', updateAvailableTimes);
+    document.getElementById('id_appointment_date').addEventListener('change', updateAvailableTimes);
+</script>
+
+{% endblock %}

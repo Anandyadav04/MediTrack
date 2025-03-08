@@ -1,0 +1,23 @@
+<!-- appointments/templates/appointments/confirmation.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title text-center">Appointment Confirmation</h3>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Doctor: {{ appointment.doctor }}</h5>
+            <p class="card-text"><strong>Date:</strong> {{ appointment.appointment_date }}</p>
+            <p class="card-text"><strong>Time:</strong> {{ appointment.appointment_time }}</p>
+            <p class="card-text"><strong>Location:</strong> {{ appointment.location }}</p>
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'book_appointment' %}" class="btn btn-secondary">Book Another Appointment</a>
+                <a href="{% url 'my_appointments' %}" class="btn btn-success">My Appointments</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

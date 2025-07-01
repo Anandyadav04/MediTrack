@@ -55,7 +55,7 @@ The skin disease detection model is trained on labeled dermatological image data
 
 For any queries or suggestions, feel free to ask on
 Email: ay108679@gmail.com
-GitHub: @Anandyadav
+GitHub: @Anandyadav04
 LinkedIn: [https://www.linkedin.com/in/anand-yadav-149414356]
 
 

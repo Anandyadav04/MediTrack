@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5" style="padding-top: 60px;">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4 rounded-4 text-center">
+                <h2 class="text-primary">Your Results</h2>
+
+                <div class="mt-4">
+                    <h4 class="text-success">Your BMI: {{ health_record.bmi }}</h4>
+                    <h4 class="text-info">Your BMR: {{ health_record.bmr }} kcal/day</h4>
+
+                    {% if health_record.bmi < 18.5 %}
+                        <h5 class="text-warning">Category: Underweight</h5>
+                    {% elif health_record.bmi < 25 %}
+                        <h5 class="text-success">Category: Normal</h5>
+                    {% elif health_record.bmi < 30 %}
+                        <h5 class="text-warning">Category: Overweight</h5>
+                    {% else %}
+                        <h5 class="text-danger">Category: Obese</h5>
+                    {% endif %}
+                </div>
+
+                <a href="{% url 'bmi_bmr_calculator' %}" class="btn btn-secondary mt-3">Calculate Again</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

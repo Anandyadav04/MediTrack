@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health NGOs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ebd0d0;
+            margin: 60px;
+            padding: 20px;
+            color: #333;
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .no-results {
+            text-align: center;
+            color: #e74c3c;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Find Health-Related NGOs</h2>
+
+    <!-- Search Form -->
+    <form method="GET">
+        <input type="text" name="search" value="{{ search_query }}" placeholder="Search by name or service">
+        <input type="text" name="location" value="{{ location_filter }}" placeholder="Filter by location">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- List of NGOs -->
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Services</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ngo in ngos %}
+            <tr>
+                <td><a href="{% url 'ngo_detail' ngo.id %}">{{ ngo.name }}</a></td> <!-- Link to NGO Detail Page -->
+                <td>{{ ngo.services }}</td>
+                <td>{{ ngo.location }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="no-results">No NGOs found based on your search criteria.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+{% endblock %}

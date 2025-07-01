@@ -1,0 +1,28 @@
+<!-- appointments/templates/appointments/my_appointments.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5" style="padding-top: 60px;">
+    <h2>Your Appointments</h2>
+
+    {% if appointments %}
+        <div class="list-group">
+            {% for appointment in appointments %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Doctor:</strong> {{ appointment.doctor }}<br>
+                        <strong>Date:</strong> {{ appointment.appointment_date }}<br>
+                        <strong>Time:</strong> {{ appointment.appointment_time }}<br>
+                    </div>
+                    <div>
+                        <a href="{% url 'delete_appointment' appointment.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'confirmation' appointment.id %}" class="btn btn-primary btn-sm ml-2">View</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You have no appointments. <a href="{% url 'book_appointment' %}">Book one now!</a></p>
+    {% endif %}
+</div>
+{% endblock %}

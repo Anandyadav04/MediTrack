@@ -1,0 +1,153 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #ebd0d0;
+    color: #fff;
+  }
+  
+  /* Navbar Styles */
+.navbar {
+    background: rgba(10, 10, 10, 0.7); /* Semi-transparent background */
+    backdrop-filter: blur(10px); /* Glassmorphism effect */
+    padding: 10px 0;
+    transition: background 0.3s ease;
+}
+
+.navbar-brand img {
+    margin-right: 10px;
+}
+
+.navbar-nav .nav-link {
+    color: #fff !important;
+    margin: 0 10px;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: #00ff00; /* Green underline */
+    bottom: -5px;
+    left: 0;
+    transition: width 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover::after {
+    width: 100%; /* Expand underline on hover */
+}
+
+.navbar-nav .nav-link.active::after {
+    width: 100%; /* Full underline for active link */
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(10px);
+    border: none;
+}
+
+.dropdown-item {
+    color: #fff !important;
+    transition: background 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Buttons */
+.btn-primary {
+    background: #3f3fd2; /* Green background */
+    border: none;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #00cc00; /* Darker green on hover */
+}
+
+.btn-outline-light {
+    border-color: #00ff00; /* Green border */
+    color: #00ff00; /* Green text */
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background: #00ff00; /* Green background on hover */
+    color: #000; /* Black text on hover */
+}
+  
+  
+  /* Hero Section */
+  .hero-section {
+    background-image: url('{% static "images/home3.avif" %}');
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    padding: 150px 0;
+  }
+  
+  .hero-section h1 {
+    font-size: 3rem;
+    font-weight: bold;
+  }
+  
+  .hero-section p {
+    font-size: 1.2rem;
+    margin: 20px 0;
+  }
+  
+  .cta-buttons .btn {
+    margin: 10px;
+  }
+  
+  /* Features Section */
+  .features-section {
+    padding: 100px 0;
+  }
+  
+  .feature-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-10px);
+  }
+  
+  /* Why Choose Section */
+  .why-choose-section {
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    padding: 100px 0;
+  }
+  
+  .stat-card {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  /* Testimonials Section */
+  .testimonials-section {
+    padding: 100px 0;
+  }
+  
+  .carousel-item {
+    text-align: center;
+    padding: 50px;
+  }
+  
+  /* Footer */
+  .footer-section {
+    background: #1a1a1a;
+    padding: 50px 0;
+  }
+  
+  .social-links a {
+    margin: 0 10px;
+    color: #fff;
+    text-decoration: none;
+  }

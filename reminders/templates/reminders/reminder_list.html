@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Your Reminders</h2>
+
+<div class="list-group">
+    {% for reminder in reminders %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>{{ reminder.message }}</strong><br>
+                <small>{{ reminder.remind_at }}</small>
+            </div>
+
+            <form action="{% url 'remove_reminder' reminder.id %}" method="POST" class="ml-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+            </form>
+        </div>
+    {% endfor %}
+</div>
+
+<a href="{% url 'add_reminder' %}" class="btn btn-primary mt-3">Add a new reminder</a>
+{% endblock %}

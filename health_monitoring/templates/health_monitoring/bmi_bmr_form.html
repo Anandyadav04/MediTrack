@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5" style="padding-top: 60px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-4 col-md-6 col-sm-8"> <!-- Smaller column size -->
+            <div class="card shadow-lg p-3 rounded-4"> <!-- Reduced padding for the card -->
+                <h2 class="text-center text-primary mb-3">BMI & BMR Calculator</h2>
+
+                <form method="POST" id="bmi-bmr-form">
+                    {% csrf_token %}
+
+                    <!-- Render Form Fields with Bootstrap Styling -->
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary w-100" id="calculate-btn">
+                        <span class="spinner-border spinner-border-sm d-none" id="loading-spinner"></span>
+                        Calculate
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById("bmi-bmr-form").addEventListener("submit", function(event) {
+    let button = document.getElementById("calculate-btn");
+    let spinner = document.getElementById("loading-spinner");
+
+    button.disabled = true; // Disable the button to prevent multiple submissions
+    spinner.classList.remove("d-none"); // Show the spinner
+
+    // The form will continue submitting normally
+});
+</script>
+{% endblock %}
+
+

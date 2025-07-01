@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5" style="padding: 45px;">
+    <h2 class="text-center mb-4">Set a Reminder</h2>
+
+    <form method="POST" class="bg-white p-4 rounded shadow-sm mx-auto" style="max-width: 600px;">
+        {% csrf_token %}
+
+        <!-- Message Field -->
+        <div class="form-group mb-4">
+            <label for="id_message" class="font-weight-bold text-primary">Message:</label>
+            {{ form.message }}
+            <small class="form-text text-muted">Enter the reminder message.</small>
+        </div>
+
+        <!-- Remind At Field -->
+        <div class="form-group mb-4">
+            <label for="id_remind_at" class="font-weight-bold text-primary">Remind At:</label>
+            {{ form.remind_at }}
+            <small class="form-text text-muted">Select the date and time for the reminder.</small>
+        </div>
+
+        <!-- Reminder Duration Field -->
+        <div class="form-group mb-4">
+            <label for="id_reminder_duration" class="font-weight-bold text-primary">Repeat for (days):</label>
+            {{ form.reminder_duration }}
+            <small class="form-text text-muted">Set the number of days to repeat the reminder (optional).</small>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">
+            <i class="fas fa-bell"></i> Add Reminder
+        </button>
+    </form>
+</div>
+
+<!-- Include Flatpickr CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    // Initialize Flatpickr for datetime selection
+    flatpickr("#id_remind_at", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        minDate: "today", // Prevent selecting past dates
+        time_24hr: true,  // Use 24-hour format
+        defaultHour: 12,  // Default hour
+        defaultMinute: 0,  // Default minute
+    });
+</script>
+
+<!-- Add FontAwesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+<style>
+    /* Custom styles for form inputs */
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    }
+
+    /* Style for the submit button */
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 12px;
+        font-size: 18px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Add some spacing and alignment */
+    .form-group label {
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-text {
+        margin-top: 4px;
+    }
+</style>
+{% endblock %}

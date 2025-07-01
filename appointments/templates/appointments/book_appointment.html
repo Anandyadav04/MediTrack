@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container my-5" style="padding-top: 60px;">
+    <h2 class="text-center mb-4">Book an Appointment</h2>
+
+    <form method="post" id="appointment-form">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="mb-3">
+            <label for="id_doctor" class="form-label">Doctor</label>
+            {{ form.doctor|add_class:"form-select" }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_appointment_date" class="form-label">Appointment Date</label>
+            <input type="text" id="id_appointment_date" name="appointment_date" class="form-control" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_appointment_time" class="form-label">Appointment Time</label>
+            <select id="id_appointment_time" name="appointment_time" class="form-select" disabled>
+                <option value="">Select a doctor and date first</option>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary btn-lg">Book Appointment</button>
+        </div>
+    </form>
+</div>
+
+<!-- Load Flatpickr CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Flatpickr for date only (without time)
+    const datePicker = flatpickr("#id_appointment_date", {
+        minDate: "today",
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates, dateStr) {
+            updateAvailableTimes();
+        }
+    });
+
+    // Time dropdown will be populated via updateAvailableTimes()
+    const timeSelect = document.getElementById('id_appointment_time');
+
+    function updateAvailableTimes() {
+        const doctorId = document.getElementById('id_doctor').value;
+        const appointmentDate = document.getElementById('id_appointment_date').value;
+        const timeSelect = document.getElementById('id_appointment_time');
+        
+        // Reset the time dropdown
+        timeSelect.innerHTML = '';
+        timeSelect.disabled = true;
+        
+        if (!doctorId) {
+            addOption(timeSelect, '', 'Select a doctor first');
+            return;
+        }
+        
+        if (!appointmentDate) {
+            addOption(timeSelect, '', 'Select a date first');
+            return;
+        }
+    
+        console.log("Fetching times for doctor:", doctorId, "date:", appointmentDate);
+        
+        fetch("/appointments/update-times/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                doctor_id: doctorId,
+                appointment_date: appointmentDate
+            })
+        })
+        .then(response => {
+            console.log("Raw response:", response);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Received data:", data);
+            
+            if (data.available_times && data.available_times.length > 0) {
+                timeSelect.disabled = false;
+                addOption(timeSelect, '', 'Select a time');
+                
+                data.available_times.forEach(time => {
+                    addOption(timeSelect, time, time);
+                });
+            } else {
+                addOption(timeSelect, '', 'No available times for this date');
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching times:", error);
+            addOption(timeSelect, '', 'Error loading times. Please try again.');
+        });
+    }
+    
+    function addOption(select, value, text) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = text;
+        select.appendChild(option);
+    }
+    // Set up event listeners
+    document.getElementById('id_doctor').addEventListener('change', updateAvailableTimes);
+});
+</script>
+{% endblock %}

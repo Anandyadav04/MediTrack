@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ ngo.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #000; /* Set default text color to black */
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2, h3 {
+            color: #2a6496;
+        }
+
+        p {
+            line-height: 1.6;
+            font-size: 16px;
+            color: #000; /* Ensure text is black */
+        }
+
+        a {
+            color: #4e8cbd;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            background-color: #4e8cbd;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #35779a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="padding: 60px">
+        <h2>{{ ngo.name }}</h2>
+        <p><strong>Location:</strong> {{ ngo.location }}</p>
+        <p><strong>Services:</strong> {{ ngo.services }}</p>
+        <p><strong>Contact:</strong> {{ ngo.contact_number }}</p>
+        <p><strong>Website:</strong> <a href="{{ ngo.website }}" target="_blank">Visit</a></p>
+        <p><strong>Email:</strong> {{ ngo.email }}</p>
+
+        <h3>Feedback</h3>
+        {% if user.is_authenticated %}
+        <form method="POST">
+            {% csrf_token %}
+            {{ feedback_form.as_p }}
+            <button type="submit">Submit Feedback</button>
+        </form>
+        {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to submit feedback.</p>
+        {% endif %}
+
+        <h4>Previous Feedback:</h4>
+        <ul>
+            {% for feedback in feedbacks %}
+            <li>
+                <strong>{{ feedback.user_name }}</strong> (Rating: {{ feedback.rating }}) <br>
+                {{ feedback.comment }} <br>
+                <em>Submitted on: {{ feedback.date }}</em>
+            </li>
+            {% empty %}
+            <p>No feedback yet.</p>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
+{% endblock %}
+
+

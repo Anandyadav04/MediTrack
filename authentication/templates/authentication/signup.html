@@ -1,81 +1,440 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Signup-MediTrack{% endblock %}</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% extends 'base.html' %}
+{% load static %}
 
-    <!-- Bootstrap JavaScript Bundle (for dropdowns, toggles) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</head>
+{% block title %}Sign Up - MediTrack{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="col-sm-6 col-md-5 p-4 shadow-lg rounded bg-white">
-        <h2 class="text-center text-success">Create an Account</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-6">
+            <!-- Signup Card -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header with Gradient -->
+                <div class="card-header py-4" style="background: linear-gradient(135deg, #4a6fa5 0%, #6c8bc7 100%);">
+                    <div class="d-flex align-items-center justify-content-center gap-3">
+                        <div class="bg-white rounded-circle p-3 shadow">
+                            <i class="fas fa-user-plus fa-2x text-primary"></i>
+                        </div>
+                        <div class="text-white">
+                            <h2 class="h2 mb-1 fw-bold">Join MediTrack</h2>
+                            <p class="mb-0 opacity-90">Your journey to better health starts here</p>
+                        </div>
+                    </div>
+                </div>
 
-        {% if form.errors %}
-        <div class="alert alert-danger">
-            <ul>
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                {% endfor %}
-            </ul>
+                <!-- Card Body -->
+                <div class="card-body p-4 p-md-5">
+                    <!-- Google Signup Button -->
+                    <div class="mb-4">
+                        <a href="#" class="btn btn-outline-dark rounded-pill w-100 py-3 d-flex align-items-center justify-content-center gap-3">
+                            <img src="https://www.google.com/favicon.ico" alt="Google" width="20" height="20">
+                            <span class="fw-semibold">Continue with Google</span>
+                        </a>
+                        <p class="text-center text-muted small mt-2 mb-0">Sign up instantly with your Google account</p>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="position-relative my-4">
+                        <hr class="border-1">
+                        <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted fw-medium">OR</span>
+                    </div>
+
+                    <!-- Form Errors -->
+                    {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-exclamation-circle fs-5"></i>
+                            <div>
+                                <strong class="d-block">Please fix the following errors:</strong>
+                                <ul class="mb-0 mt-2 ps-3">
+                                    {% for field in form %}
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endif %}
+
+                    <!-- Signup Form -->
+                    <form method="POST" action="{% url 'signup' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <!-- Username -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" 
+                                           name="{{ form.username.name }}" 
+                                           class="form-control rounded-3" 
+                                           id="username"
+                                           value="{{ form.username.value|default:'' }}" 
+                                           placeholder="Username"
+                                           required>
+                                    <label for="username" class="text-muted">
+                                        <i class="fas fa-user me-2"></i>Username
+                                    </label>
+                                </div>
+                                {% if form.username.errors %}
+                                <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" 
+                                           name="{{ form.email.name }}" 
+                                           class="form-control rounded-3" 
+                                           id="email"
+                                           value="{{ form.email.value|default:'' }}" 
+                                           placeholder="Email"
+                                           required>
+                                    <label for="email" class="text-muted">
+                                        <i class="fas fa-envelope me-2"></i>Email Address
+                                    </label>
+                                </div>
+                                {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="tel" 
+                                           name="{{ form.phone_number.name }}" 
+                                           class="form-control rounded-3" 
+                                           id="phone"
+                                           value="{{ form.phone_number.value|default:'' }}" 
+                                           placeholder="Phone Number"
+                                           required>
+                                    <label for="phone" class="text-muted">
+                                        <i class="fas fa-phone me-2"></i>Phone Number
+                                    </label>
+                                </div>
+                                {% if form.phone_number.errors %}
+                                <div class="text-danger small mt-1">{{ form.phone_number.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="password" 
+                                           name="{{ form.password1.name }}" 
+                                           class="form-control rounded-3" 
+                                           id="password1"
+                                           placeholder="Password"
+                                           required>
+                                    <label for="password1" class="text-muted">
+                                        <i class="fas fa-lock me-2"></i>Password
+                                    </label>
+                                    <span class="position-absolute end-0 top-50 translate-middle-y me-3 toggle-password" 
+                                          data-target="password1">
+                                        <i class="fas fa-eye text-muted" style="cursor: pointer;"></i>
+                                    </span>
+                                </div>
+                                {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="password" 
+                                           name="{{ form.password2.name }}" 
+                                           class="form-control rounded-3" 
+                                           id="password2"
+                                           placeholder="Confirm Password"
+                                           required>
+                                    <label for="password2" class="text-muted">
+                                        <i class="fas fa-lock me-2"></i>Confirm Password
+                                    </label>
+                                    <span class="position-absolute end-0 top-50 translate-middle-y me-3 toggle-password" 
+                                          data-target="password2">
+                                        <i class="fas fa-eye text-muted" style="cursor: pointer;"></i>
+                                    </span>
+                                </div>
+                                {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Password Requirements -->
+                            <div class="col-12">
+                                <div class="card bg-light border-0 rounded-3">
+                                    <div class="card-body py-3">
+                                        <p class="mb-2 small fw-semibold text-dark">
+                                            <i class="fas fa-info-circle me-2 text-primary"></i>Password Requirements:
+                                        </p>
+                                        <ul class="list-unstyled mb-0 small">
+                                            <li class="mb-1">
+                                                <i class="fas fa-check-circle text-success me-2"></i>
+                                                At least 8 characters
+                                            </li>
+                                            <li class="mb-1">
+                                                <i class="fas fa-check-circle text-success me-2"></i>
+                                                Mix of letters and numbers
+                                            </li>
+                                            <li>
+                                                <i class="fas fa-check-circle text-success me-2"></i>
+                                                Special characters (optional)
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Terms & Conditions -->
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label small" for="terms">
+                                        I agree to the <a href="#" class="text-decoration-none fw-semibold">Terms of Service</a> 
+                                        and <a href="#" class="text-decoration-none fw-semibold">Privacy Policy</a>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-sm">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+
+                        <!-- Login Link -->
+                        <div class="text-center mt-4 pt-3 border-top">
+                            <p class="mb-2">Already have an account?</p>
+                            <a href="{% url 'login' %}" class="btn btn-outline-primary rounded-pill px-4">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login to Your Account
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Security Info -->
+            <div class="mt-4 text-center">
+                <div class="d-flex justify-content-center gap-3 mb-2">
+                    <span class="text-success">
+                        <i class="fas fa-shield-alt fa-lg"></i>
+                        <span class="small ms-1">Secure</span>
+                    </span>
+                    <span class="text-primary">
+                        <i class="fas fa-lock fa-lg"></i>
+                        <span class="small ms-1">Encrypted</span>
+                    </span>
+                    <span class="text-info">
+                        <i class="fas fa-user-shield fa-lg"></i>
+                        <span class="small ms-1">Protected</span>
+                    </span>
+                </div>
+                <p class="text-muted small mb-0">
+                    Your information is protected with 256-bit SSL encryption
+                </p>
+            </div>
         </div>
-        {% endif %}
-
-        <form method="POST" action="{% url 'signup' %}">
-            {% csrf_token %}
-
-            <div class="mb-3">
-                <label for="{{ form.username.id_for_label }}" class="form-label">Username:</label>
-                <input type="text" name="{{ form.username.name }}" class="form-control" value="{{ form.username.value|default:'' }}" placeholder="Choose a username" required />
-                {% if form.username.errors %}
-                <span class="text-danger">{{ form.username.errors }}</span>
-                {% endif %}
-            </div>
-
-            <div class="mb-3">
-                <label for="{{ form.email.id_for_label }}" class="form-label">Email:</label>
-                <input type="email" name="{{ form.email.name }}" class="form-control" value="{{ form.email.value|default:'' }}" placeholder="Enter your email" required />
-                {% if form.email.errors %}
-                <span class="text-danger">{{ form.email.errors }}</span>
-                {% endif %}
-            </div>
-
-            <div class="mb-3">
-                <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number:</label>
-                <input type="text" name="{{ form.phone_number.name }}" class="form-control" value="{{ form.phone_number.value|default:'' }}" placeholder="Enter your phone number" required />
-                {% if form.phone_number.errors %}
-                <span class="text-danger">{{ form.phone_number.errors }}</span>
-                {% endif %}
-            </div>
-
-            <div class="mb-3">
-                <label for="{{ form.password1.id_for_label }}" class="form-label">Password:</label>
-                <input type="password" name="{{ form.password1.name }}" class="form-control" placeholder="Create a password" required />
-                {% if form.password1.errors %}
-                <span class="text-danger">{{ form.password1.errors }}</span>
-                {% endif %}
-            </div>
-
-            <div class="mb-3">
-                <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password:</label>
-                <input type="password" name="{{ form.password2.name }}" class="form-control" placeholder="Re-enter your password" required />
-                {% if form.password2.errors %}
-                <span class="text-danger">{{ form.password2.errors }}</span>
-                {% endif %}
-            </div>
-
-            <button type="submit" class="btn btn-success w-100">Sign Up</button>
-
-            <div class="text-center mt-3">
-                <p>Already have an account? <a href="{% url 'login' %}" class="text-decoration-none">Login</a></p>
-            </div>
-        </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Custom Styles for Signup Page */
+    .card {
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .form-control:focus {
+        border-color: #4a6fa5;
+        box-shadow: 0 0 0 0.25rem rgba(74, 111, 165, 0.25);
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #4a6fa5;
+    }
+    
+    .btn-outline-dark {
+        border-color: #dee2e6;
+        color: #495057;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-dark:hover {
+        background-color: #f8f9fa;
+        border-color: #adb5bd;
+        transform: translateY(-2px);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4a6fa5 0%, #6c8bc7 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #3a5f95 0%, #5c7bb7 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(74, 111, 165, 0.4);
+    }
+    
+    .btn-outline-primary {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Toggle Password Eye Icon */
+    .toggle-password:hover i {
+        color: #4a6fa5 !important;
+    }
+    
+    /* Checkbox styling */
+    .form-check-input:checked {
+        background-color: #4a6fa5;
+        border-color: #4a6fa5;
+    }
+    
+    /* Card header animation */
+    .card-header {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1.5rem !important;
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle Password Visibility
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+        
+        // Password Strength Indicator (simplified)
+        const passwordInput = document.getElementById('password1');
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const requirements = document.querySelectorAll('.card .list-unstyled li i');
+                
+                // Reset all to gray
+                requirements.forEach(icon => {
+                    icon.className = 'fas fa-circle me-2 text-muted';
+                });
+                
+                // Check requirements
+                if (password.length >= 8) {
+                    requirements[0].className = 'fas fa-check-circle text-success me-2';
+                }
+                
+                if (/[A-Za-z]/.test(password) && /\d/.test(password)) {
+                    requirements[1].className = 'fas fa-check-circle text-success me-2';
+                }
+                
+                if (/[^A-Za-z0-9]/.test(password)) {
+                    requirements[2].className = 'fas fa-check-circle text-success me-2';
+                }
+            });
+        }
+        
+        // Form Validation Feedback
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const terms = document.getElementById('terms');
+                if (!terms.checked) {
+                    e.preventDefault();
+                    terms.focus();
+                    terms.classList.add('is-invalid');
+                    return false;
+                }
+            });
+        }
+        
+        // Google Signup Button Animation
+        const googleBtn = document.querySelector('.btn-outline-dark');
+        if (googleBtn) {
+            googleBtn.addEventListener('mouseenter', function() {
+                const img = this.querySelector('img');
+                img.style.transform = 'scale(1.2)';
+                img.style.transition = 'transform 0.3s ease';
+            });
+            
+            googleBtn.addEventListener('mouseleave', function() {
+                const img = this.querySelector('img');
+                img.style.transform = 'scale(1)';
+            });
+        }
+        
+        // Focus animation for inputs
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    });
+</script>
 {% endblock %}

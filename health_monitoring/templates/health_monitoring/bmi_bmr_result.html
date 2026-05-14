@@ -1,31 +1,665 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-5" style="padding-top: 60px;">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg p-4 rounded-4 text-center">
-                <h2 class="text-primary">Your Results</h2>
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #4a6fa5 0%, #6c8bc7 100%);
+        --success-gradient: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        --warning-gradient: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        --danger-gradient: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        --info-gradient: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        --card-shadow: 0 20px 60px rgba(74, 111, 165, 0.2);
+        --card-shadow-hover: 0 30px 80px rgba(74, 111, 165, 0.3);
+    }
 
-                <div class="mt-4">
-                    <h4 class="text-success">Your BMI: {{ health_record.bmi }}</h4>
-                    <h4 class="text-info">Your BMR: {{ health_record.bmr }} kcal/day</h4>
+    .results-wrapper {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f0f4f8 0%, #e4edf5 100%);
+        padding: 120px 40px 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-                    {% if health_record.bmi < 18.5 %}
-                        <h5 class="text-warning">Category: Underweight</h5>
-                    {% elif health_record.bmi < 25 %}
-                        <h5 class="text-success">Category: Normal</h5>
-                    {% elif health_record.bmi < 30 %}
-                        <h5 class="text-warning">Category: Overweight</h5>
-                    {% else %}
-                        <h5 class="text-danger">Category: Obese</h5>
-                    {% endif %}
+    .results-card {
+        background: white;
+        border-radius: 28px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #e3e8f0;
+        overflow: hidden;
+        max-width: 1000px;
+        width: 100%;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 600px;
+    }
+
+    .results-card:hover {
+        box-shadow: var(--card-shadow-hover);
+        transform: translateY(-6px);
+    }
+
+    /* Left Panel - Main Results */
+    .results-left-panel {
+        background: linear-gradient(145deg, #4a6fa5 0%, #3a5a85 100%);
+        padding: 3.5rem;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .results-left-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2ecc71, #3498db, #9b59b6);
+    }
+
+    .results-left-panel::after {
+        content: '📊';
+        position: absolute;
+        right: 2rem;
+        top: 2rem;
+        font-size: 4rem;
+        opacity: 0.1;
+    }
+
+    .results-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 0.75rem;
+        line-height: 1.2;
+        position: relative;
+        z-index: 2;
+    }
+
+    .results-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        margin-bottom: 3rem;
+        font-weight: 400;
+        max-width: 90%;
+        line-height: 1.6;
+    }
+
+    /* Main Metrics - Large Display */
+    .main-metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .main-metric {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .main-metric:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-3px);
+    }
+
+    .main-metric-value {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin: 0.5rem 0;
+        color: white;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .main-metric-label {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .main-metric-unit {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
+    }
+
+    /* Right Panel - Details */
+    .results-right-panel {
+        padding: 3.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Category Display */
+    .category-display {
+        margin-bottom: 2.5rem;
+    }
+
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .category-underweight .category-icon { background: var(--info-gradient); }
+    .category-normal .category-icon { background: var(--success-gradient); }
+    .category-overweight .category-icon { background: var(--warning-gradient); }
+    .category-obese .category-icon { background: var(--danger-gradient); }
+
+    .category-text h3 {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        margin: 0 0 0.5rem 0;
+        font-weight: 700;
+    }
+
+    .category-text p {
+        color: #718096;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    /* Category Badge */
+    .category-badge {
+        display: inline-block;
+        padding: 0.85rem 2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin: 0.5rem 0 1.5rem 0;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .category-badge:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .category-underweight .category-badge {
+        background: var(--info-gradient);
+        color: white;
+    }
+
+    .category-normal .category-badge {
+        background: var(--success-gradient);
+        color: white;
+    }
+
+    .category-overweight .category-badge {
+        background: var(--warning-gradient);
+        color: white;
+    }
+
+    .category-obese .category-badge {
+        background: var(--danger-gradient);
+        color: white;
+    }
+
+    /* BMI Scale */
+    .bmi-scale {
+        margin: 2rem 0 3rem 0;
+    }
+
+    .scale-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+        color: #718096;
+        font-weight: 600;
+    }
+
+    .scale-track {
+        width: 100%;
+        height: 12px;
+        background: linear-gradient(90deg, 
+            #3498db 0%, 
+            #3498db 18.5%, 
+            #2ecc71 18.5%, 
+            #2ecc71 25%, 
+            #f39c12 25%, 
+            #f39c12 30%, 
+            #e74c3c 30%, 
+            #e74c3c 100%
+        );
+        border-radius: 6px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .scale-track::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.2) 2px,
+            rgba(255, 255, 255, 0.2) 4px
+        );
+    }
+
+    .scale-marker {
+        position: absolute;
+        top: -8px;
+        width: 28px;
+        height: 28px;
+        background: white;
+        border: 4px solid #2c3e50;
+        border-radius: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        z-index: 10;
+        transition: left 1.5s ease-out;
+    }
+
+    .scale-marker::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background: #2c3e50;
+        border-radius: 50%;
+    }
+
+    /* Health Tips */
+    .health-tips {
+        background: linear-gradient(135deg, #f8fafd 0%, #eef2f7 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+        border-left: 4px solid #3498db;
+    }
+
+    .health-tips h4 {
+        color: #2980b9;
+        margin-bottom: 1.25rem;
+        font-size: 1.3rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .health-tips ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .health-tips li {
+        padding: 0.75rem 0 0.75rem 1.5rem;
+        color: #2c3e50;
+        font-size: 1rem;
+        line-height: 1.6;
+        position: relative;
+    }
+
+    .health-tips li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: #3498db;
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: auto;
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 1.25rem 2rem;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-recalculate {
+        background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+        color: white;
+    }
+
+    .btn-recalculate:hover {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(74, 85, 104, 0.3);
+        color: white;
+    }
+
+    .btn-share {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+    }
+
+    .btn-share:hover {
+        background: linear-gradient(135deg, #2980b9 0%, #21618c 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(52, 152, 219, 0.3);
+        color: white;
+    }
+
+    /* Animations */
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .main-metric {
+        animation: fadeInLeft 0.8s ease;
+    }
+
+    .main-metric:nth-child(2) {
+        animation: fadeInRight 0.8s ease;
+    }
+
+    .category-display,
+    .bmi-scale,
+    .health-tips {
+        animation: fadeInRight 0.8s ease;
+    }
+
+    .action-buttons {
+        animation: fadeInRight 0.8s ease 0.4s both;
+    }
+
+    /* Responsive for laptop/desktop */
+    @media (max-width: 1200px) {
+        .results-card {
+            max-width: 900px;
+        }
+        
+        .results-left-panel,
+        .results-right-panel {
+            padding: 2.5rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .results-card {
+            grid-template-columns: 1fr;
+            max-width: 700px;
+        }
+        
+        .results-left-panel {
+            padding: 2.5rem;
+        }
+    }
+
+    /* Hide on mobile (optional) */
+    @media (max-width: 768px) {
+        .results-wrapper {
+            padding: 100px 20px 40px;
+        }
+        
+        .results-card {
+            max-width: 100%;
+        }
+    }
+</style>
+
+<div class="results-wrapper">
+    <div class="results-card">
+        <!-- Left Panel: Main Results -->
+        <div class="results-left-panel">
+            <h1 class="results-title">
+                <i class="fas fa-chart-line me-3"></i>Health Analysis
+            </h1>
+            <p class="results-subtitle">
+                Your comprehensive health assessment based on medical standards. 
+                Track your progress and maintain optimal health.
+            </p>
+
+            <!-- Main Metrics Grid -->
+            <div class="main-metrics">
+                <!-- BMI -->
+                <div class="main-metric">
+                    <div class="main-metric-label">
+                        <i class="fas fa-weight me-2"></i>BMI
+                    </div>
+                    <div class="main-metric-value">{{ health_record.bmi|floatformat:1 }}</div>
+                    <div class="main-metric-unit">kg/m²</div>
                 </div>
 
-                <a href="{% url 'bmi_bmr_calculator' %}" class="btn btn-secondary mt-3">Calculate Again</a>
+                <!-- BMR -->
+                <div class="main-metric">
+                    <div class="main-metric-label">
+                        <i class="fas fa-fire me-2"></i>BMR
+                    </div>
+                    <div class="main-metric-value">{{ health_record.bmr|floatformat:0 }}</div>
+                    <div class="main-metric-unit">kcal/day</div>
+                </div>
+            </div>
+
+            <!-- Timestamp -->
+            <div style="margin-top: auto; opacity: 0.8;">
+                <small>
+                    <i class="fas fa-clock me-2"></i>
+                    Calculated on {{ health_record.created_at|date:"F j, Y" }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Right Panel: Details & Actions -->
+        <div class="results-right-panel">
+            <!-- Category Display -->
+            <div class="category-display 
+                {% if health_record.bmi < 18.5 %}category-underweight
+                {% elif health_record.bmi < 25 %}category-normal
+                {% elif health_record.bmi < 30 %}category-overweight
+                {% else %}category-obese{% endif %}">
+                
+                <div class="category-header">
+                    <div class="category-icon">
+                        {% if health_record.bmi < 18.5 %}
+                            <i class="fas fa-user-minus"></i>
+                        {% elif health_record.bmi < 25 %}
+                            <i class="fas fa-user-check"></i>
+                        {% elif health_record.bmi < 30 %}
+                            <i class="fas fa-user"></i>
+                        {% else %}
+                            <i class="fas fa-user-injured"></i>
+                        {% endif %}
+                    </div>
+                    <div class="category-text">
+                        <h3>BMI Category</h3>
+                        <p>Based on WHO standards</p>
+                    </div>
+                </div>
+
+                <!-- Category Badge -->
+                <div class="category-badge">
+                    {% if health_record.bmi < 18.5 %}
+                        <i class="fas fa-user-minus me-2"></i>Underweight
+                    {% elif health_record.bmi < 25 %}
+                        <i class="fas fa-user-check me-2"></i>Normal Weight
+                    {% elif health_record.bmi < 30 %}
+                        <i class="fas fa-user me-2"></i>Overweight
+                    {% else %}
+                        <i class="fas fa-user-injured me-2"></i>Obese
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- BMI Scale -->
+            <div class="bmi-scale">
+                <div class="scale-labels">
+                    <span>Underweight (&lt;18.5)</span>
+                    <span>Normal (18.5-24.9)</span>
+                    <span>Overweight (25-29.9)</span>
+                    <span>Obese (≥30)</span>
+                </div>
+                <div class="scale-track">
+                    <div class="scale-marker" id="bmi-marker"></div>
+                </div>
+            </div>
+
+            <!-- Health Tips -->
+            <div class="health-tips">
+                <h4><i class="fas fa-lightbulb"></i> Personalized Recommendations</h4>
+                <ul>
+                    {% if health_record.bmi < 18.5 %}
+                        <li>Increase daily calorie intake by 300-500 calories with nutrient-dense foods</li>
+                        <li>Incorporate resistance training 3 times weekly to build muscle mass</li>
+                        <li>Consume protein-rich foods like eggs, lean meats, and legumes</li>
+                        <li>Consult a nutritionist for a personalized meal plan</li>
+                    {% elif health_record.bmi < 25 %}
+                        <li>Maintain current healthy habits and regular exercise routine</li>
+                        <li>Aim for 150-300 minutes of moderate aerobic activity weekly</li>
+                        <li>Include strength training exercises at least twice per week</li>
+                        <li>Regular health checkups and monitor any changes</li>
+                    {% elif health_record.bmi < 30 %}
+                        <li>Reduce daily calorie intake by 300-500 calories for gradual weight loss</li>
+                        <li>Increase physical activity to 45-60 minutes most days</li>
+                        <li>Focus on whole foods and limit processed/sugary items</li>
+                        <li>Track food intake and exercise for better accountability</li>
+                    {% else %}
+                        <li>Schedule consultation with healthcare provider for comprehensive plan</li>
+                        <li>Start with low-impact exercises like walking or swimming</li>
+                        <li>Consider working with a registered dietitian for meal planning</li>
+                        <li>Set realistic goals for 5-10% weight loss initially</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="{% url 'bmi_bmr_calculator' %}" class="btn-action btn-recalculate">
+                    <i class="fas fa-redo"></i> Calculate Again
+                </a>
+                <a href="#" class="btn-action btn-share" onclick="window.print()">
+                    <i class="fas fa-download"></i> Save Report
+                </a>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate BMI marker
+    const bmi = {{ health_record.bmi }};
+    const marker = document.getElementById('bmi-marker');
+    
+    // Calculate position (0-100% based on BMI range 15-40)
+    let position = ((bmi - 15) / (40 - 15)) * 100;
+    position = Math.max(0, Math.min(100, position));
+    
+    // Animate marker position
+    setTimeout(() => {
+        marker.style.left = `${position}%`;
+    }, 500);
+    
+    // Add hover effects to main metrics
+    const mainMetrics = document.querySelectorAll('.main-metric');
+    mainMetrics.forEach(metric => {
+        metric.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        metric.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Add pulse animation to category badge
+    const categoryBadge = document.querySelector('.category-badge');
+    if (categoryBadge) {
+        categoryBadge.addEventListener('mouseenter', function() {
+            this.style.animation = 'pulse 0.6s ease';
+        });
+        
+        categoryBadge.addEventListener('animationend', function() {
+            this.style.animation = '';
+        });
+    }
+    
+    // Print/save functionality
+    const saveBtn = document.querySelector('.btn-share');
+    saveBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.print();
+    });
+    
+    // Add loading animation for elements
+    const animatedElements = document.querySelectorAll('.main-metric, .category-display, .health-tips');
+    animatedElements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(30px)';
+        el.style.animation = `fadeInRight 0.8s ease ${index * 0.2}s forwards`;
+    });
+});
+</script>
+{% endblock %}

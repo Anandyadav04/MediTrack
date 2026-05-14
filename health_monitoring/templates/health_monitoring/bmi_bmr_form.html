@@ -1,47 +1,447 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-5" style="padding-top: 60px;">
-    <div class="row justify-content-center">
-        <div class="col-lg-4 col-md-6 col-sm-8"> <!-- Smaller column size -->
-            <div class="card shadow-lg p-3 rounded-4"> <!-- Reduced padding for the card -->
-                <h2 class="text-center text-primary mb-3">BMI & BMR Calculator</h2>
+<style>
+    /* Enhanced Design Variables */
+    :root {
+        --primary-gradient: linear-gradient(135deg, #4a6fa5 0%, #6c8bc7 100%);
+        --success-gradient: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        --card-shadow: 0 12px 40px rgba(74, 111, 165, 0.15);
+        --card-shadow-hover: 0 20px 50px rgba(74, 111, 165, 0.25);
+    }
 
-                <form method="POST" id="bmi-bmr-form">
-                    {% csrf_token %}
+    /* Main Container */
+    .calculator-wrapper {
+        min-height: calc(100vh - 120px);
+        background: linear-gradient(135deg, #f8fafd 0%, #eef2f7 100%);
+        padding: 120px 20px 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-                    <!-- Render Form Fields with Bootstrap Styling -->
-                    {% for field in form %}
-                        <div class="mb-3">
-                            <label class="form-label">{{ field.label }}</label>
-                            {{ field }}
-                            {% if field.help_text %}
-                                <small class="text-muted">{{ field.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+    /* Card Design */
+    .calculator-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #eef2f7;
+        overflow: hidden;
+        max-width: 480px;
+        width: 100%;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-                    <button type="submit" class="btn btn-primary w-100" id="calculate-btn">
-                        <span class="spinner-border spinner-border-sm d-none" id="loading-spinner"></span>
-                        Calculate
-                    </button>
-                </form>
-            </div>
+    .calculator-card:hover {
+        box-shadow: var(--card-shadow-hover);
+        transform: translateY(-4px);
+    }
+
+    /* Header */
+    .calculator-header {
+        background: var(--primary-gradient);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .calculator-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2ecc71, #3498db, #9b59b6);
+    }
+
+    .calculator-title {
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .calculator-subtitle {
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 1rem;
+        margin: 0;
+        font-weight: 400;
+    }
+
+    /* Body */
+    .calculator-body {
+        padding: 2.5rem 2rem;
+    }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 1.75rem;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+    }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4a6fa5;
+        font-size: 1.1rem;
+        z-index: 3;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid #e3e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #2c3e50;
+        background: #fafcff;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4a6fa5;
+        box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.15);
+        background: white;
+        outline: none;
+    }
+
+    .input-suffix {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #718096;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    /* Submit Button */
+    .submit-btn {
+        width: 100%;
+        padding: 1.1rem;
+        background: var(--success-gradient);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+        letter-spacing: 0.5px;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    /* Spinner */
+    .spinner {
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2.5px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Help Text */
+    .help-text {
+        font-size: 0.85rem;
+        color: #718096;
+        margin-top: 0.5rem;
+        padding-left: 0.5rem;
+        font-style: italic;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .calculator-wrapper {
+            padding: 100px 15px 40px;
+        }
+        
+        .calculator-card {
+            max-width: 100%;
+        }
+        
+        .calculator-header {
+            padding: 2rem 1.5rem;
+        }
+        
+        .calculator-body {
+            padding: 2rem 1.5rem;
+        }
+        
+        .calculator-title {
+            font-size: 1.75rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .calculator-title {
+            font-size: 1.5rem;
+        }
+        
+        .form-control {
+            padding: 0.9rem 0.9rem 0.9rem 2.8rem;
+        }
+        
+        .submit-btn {
+            padding: 1rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* Loading Animation */
+    .loading .form-control {
+        background: linear-gradient(90deg, #f0f4f8 25%, #e4edf5 50%, #f0f4f8 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* Custom Select Styling */
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a6fa5' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        padding-right: 3rem;
+    }
+
+    /* Gender Options Styling */
+    .gender-options {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .gender-option {
+        flex: 1;
+        padding: 1rem;
+        border: 2px solid #e3e8f0;
+        border-radius: 12px;
+        background: #fafcff;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        color: #4a5568;
+    }
+
+    .gender-option:hover {
+        border-color: #4a6fa5;
+        background: #f0f4f8;
+    }
+
+    .gender-option.selected {
+        border-color: #4a6fa5;
+        background: #e8f0fe;
+        color: #4a6fa5;
+        font-weight: 600;
+    }
+
+    .gender-icon {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+</style>
+
+<div class="calculator-wrapper">
+    <div class="calculator-card">
+        <!-- Header -->
+        <div class="calculator-header">
+            <h1 class="calculator-title">
+                <i class="fas fa-calculator me-2"></i>Health Calculator
+            </h1>
+            <p class="calculator-subtitle">Calculate your BMI & BMR accurately</p>
+        </div>
+
+        <!-- Body -->
+        <div class="calculator-body">
+            <form method="POST" id="bmi-bmr-form">
+                {% csrf_token %}
+
+                <!-- Weight Field -->
+                <div class="form-group">
+                    <label class="form-label" for="id_weight">
+                        <i class="fas fa-weight me-2"></i>Weight
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-weight input-icon"></i>
+                        {{ form.weight }}
+                        <span class="input-suffix">kg</span>
+                    </div>
+                    {% if form.weight.help_text %}
+                        <div class="help-text">{{ form.weight.help_text }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Height Field -->
+                <div class="form-group">
+                    <label class="form-label" for="id_height">
+                        <i class="fas fa-ruler-vertical me-2"></i>Height
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-ruler-vertical input-icon"></i>
+                        {{ form.height }}
+                        <span class="input-suffix">cm</span>
+                    </div>
+                    {% if form.height.help_text %}
+                        <div class="help-text">{{ form.height.help_text }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Age Field -->
+                <div class="form-group">
+                    <label class="form-label" for="id_age">
+                        <i class="fas fa-birthday-cake me-2"></i>Age
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-birthday-cake input-icon"></i>
+                        {{ form.age }}
+                        <span class="input-suffix">years</span>
+                    </div>
+                    {% if form.age.help_text %}
+                        <div class="help-text">{{ form.age.help_text }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Gender Field -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user me-2"></i>Gender
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user input-icon"></i>
+                        {{ form.gender }}
+                    </div>
+                    {% if form.gender.help_text %}
+                        <div class="help-text">{{ form.gender.help_text }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn" id="calculate-btn">
+                    <span class="spinner d-none" id="loading-spinner"></span>
+                    <span id="button-text">
+                        <i class="fas fa-calculator me-2"></i>Calculate Now
+                    </span>
+                </button>
+            </form>
         </div>
     </div>
 </div>
 
 <script>
-document.getElementById("bmi-bmr-form").addEventListener("submit", function(event) {
-    let button = document.getElementById("calculate-btn");
-    let spinner = document.getElementById("loading-spinner");
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('bmi-bmr-form');
+    const calculateBtn = document.getElementById('calculate-btn');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const buttonText = document.getElementById('button-text');
 
-    button.disabled = true; // Disable the button to prevent multiple submissions
-    spinner.classList.remove("d-none"); // Show the spinner
+    // Add custom styling to form fields
+    const formControls = form.querySelectorAll('.form-control');
+    formControls.forEach(control => {
+        // Ensure all form controls have proper classes
+        control.classList.add('form-control');
+        
+        // Add focus effect
+        control.addEventListener('focus', function() {
+            this.parentElement.style.borderColor = '#4a6fa5';
+        });
+        
+        control.addEventListener('blur', function() {
+            this.parentElement.style.borderColor = '#e3e8f0';
+        });
+    });
 
-    // The form will continue submitting normally
+    // Form submission handler
+    form.addEventListener('submit', function(event) {
+        // Keep your existing logic here - just UI improvements
+        calculateBtn.disabled = true;
+        loadingSpinner.classList.remove('d-none');
+        buttonText.innerHTML = '<i class="fas fa-calculator me-2"></i>Calculating...';
+        
+        // Optional: Add subtle animation to form
+        form.classList.add('loading');
+        
+        // Your existing form submission logic continues here
+        // The form will submit normally as per your original code
+    });
+
+    // Add input validation styling
+    formControls.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value) {
+                this.style.borderColor = '#2ecc71';
+                this.style.backgroundColor = '#f8fff9';
+            } else {
+                this.style.borderColor = '#e3e8f0';
+                this.style.backgroundColor = '#fafcff';
+            }
+        });
+    });
+
+    // Add gender selection styling (if using radio buttons)
+    const genderOptions = form.querySelectorAll('input[name="gender"]');
+    if (genderOptions.length > 0) {
+        genderOptions.forEach(option => {
+            option.addEventListener('change', function() {
+                genderOptions.forEach(opt => {
+                    const label = document.querySelector(`label[for="${opt.id}"]`);
+                    if (label) {
+                        label.classList.remove('selected');
+                    }
+                });
+                const label = document.querySelector(`label[for="${this.id}"]`);
+                if (label) {
+                    label.classList.add('selected');
+                }
+            });
+        });
+    }
 });
 </script>
 {% endblock %}
-
-

@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -64,14 +66,14 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = ""  # Replace with your email
-EMAIL_HOST_PASSWORD = ""  # Generate an app password from Google
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")  # Replace with your email
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # Generate an app password from Google
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Twilio configuration
-TWILIO_ACCOUNT_SID = ""  # Replace with your Twilio Account SID
-TWILIO_AUTH_TOKEN = ""    # Replace with your Twilio Auth Token
-TWILIO_PHONE_NUMBER = ""  # Replace with your Twilio phone number
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")  # Replace with your Twilio Account SID
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")    # Replace with your Twilio Auth Token
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")  # Replace with your Twilio phone number
 
 
 
@@ -164,8 +166,6 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',  # Loads global static files (CSS, JS, images)
 ]
-
-import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

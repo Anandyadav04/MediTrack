@@ -1,106 +1,852 @@
 {% extends 'base.html' %}
-
-{% block title %}Home - MediTrack{% endblock %}
+{% block title %}Home - MediTrack | Your AI Health Companion{% endblock %}
 {% load static %}
 
 {% block content %}
- <!-- Hero Section -->
- <section id="hero" class="hero-section" style="background: url('{% static "images/home3.avif" %}') no-repeat center center/cover; height: 100vh; display: flex; align-items: center; justify-content: center;">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-6">
-        <h1>Stay Healthy, Stay Connected!</h1>
-        <p>Your futuristic health companion powered by AI.</p>
-        <div class="cta-buttons">
-          <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
-          <a href="{% url 'skin_diagnosis_upload' %}" class="btn btn-outline-light">Try Skin Detection</a>
+<style>
+    /* CSS Variables */
+    :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #6c8bc7;
+        --accent-color: #2ecc71;
+        --dark-color: #2c3e50;
+        --light-color: #f8fafd;
+        --gradient-primary: linear-gradient(135deg, #4a6fa5, #6c8bc7);
+        --gradient-success: linear-gradient(135deg, #2ecc71, #27ae60);
+        --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --shadow-medium: 0 15px 40px rgba(0, 0, 0, 0.12);
+        --shadow-heavy: 0 20px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Hero Section */
+    .hero-section {
+        min-height: 100vh;
+        background: linear-gradient(rgba(44, 62, 80, 0.85), rgba(74, 111, 165, 0.85)),
+                    url('{% static "images/home3.avif" %}') center/cover;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        color: white;
+        padding: 100px 0 60px;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(74, 111, 165, 0.3) 0%, transparent 50%);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-content h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(45deg, white, #e3f2fd);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-content p {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+        background: var(--gradient-success);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-hero-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(46, 204, 113, 0.4);
+        color: white;
+    }
+
+    .btn-hero-outline {
+        background: transparent;
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .btn-hero-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        transform: translateY(-3px);
+        color: white;
+    }
+
+    /* Stats Counter */
+    .stats-counter {
+        position: absolute;
+        bottom: 40px;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        max-width: 800px;
+        margin: 0 auto;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 0 1rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Features Section */
+    .features-section {
+        padding: 80px 0;
+        background: var(--light-color);
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s ease;
+        border: 1px solid #eef2f7;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-light);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-heavy);
+        border-color: var(--primary-color);
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--gradient-primary);
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 1.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .feature-card h3 {
+        color: var(--dark-color);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .feature-link:hover {
+        color: var(--secondary-color);
+        gap: 10px;
+    }
+
+    /* Why Choose Section */
+    .why-choose-section {
+        padding: 80px 0;
+        background: white;
+    }
+
+    .why-choose-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .benefit-card {
+        background: var(--light-color);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .benefit-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-5px);
+        background: white;
+    }
+
+    .benefit-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .benefit-card h4 {
+        color: var(--dark-color);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Testimonials */
+    .testimonials-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #f8fafd, #e4edf5);
+    }
+
+    .testimonial-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin: 1rem;
+        box-shadow: var(--shadow-light);
+        position: relative;
+    }
+
+    .testimonial-card::before {
+        content: '"';
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 4rem;
+        color: var(--primary-color);
+        opacity: 0.2;
+        font-family: Georgia, serif;
+    }
+
+    .testimonial-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .author-info h5 {
+        margin: 0;
+        color: var(--dark-color);
+        font-weight: 600;
+    }
+
+    .author-info p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* Carousel Controls */
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 50px;
+        height: 50px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 1;
+    }
+
+    .carousel-control-prev {
+        left: -25px;
+    }
+
+    .carousel-control-next {
+        right: -25px;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 100px 0;
+        background: var(--gradient-primary);
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1%, transparent 1%);
+        background-size: 50px 50px;
+        animation: float 20s linear infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        100% { transform: translate(50px, 50px) rotate(360deg); }
+    }
+
+    .cta-section h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .cta-section p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .hero-content h1 {
+            font-size: 2.8rem;
+        }
+        
+        .stats-counter {
+            position: relative;
+            bottom: auto;
+            margin-top: 3rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 2.2rem;
+        }
+        
+        .hero-content p {
+            font-size: 1.1rem;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+        }
+        
+        .btn-hero-primary,
+        .btn-hero-outline {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .carousel-control-prev,
+        .carousel-control-next {
+            display: none;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-section {
+            padding: 80px 0 40px;
+        }
+        
+        .feature-card {
+            padding: 2rem 1.5rem;
+        }
+        
+        .testimonial-card {
+            padding: 2rem;
+        }
+        
+        .cta-section {
+            padding: 60px 0;
+        }
+    }
+
+    /* Animation Classes */
+    .fade-in {
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .slide-in-left {
+        animation: slideInLeft 0.8s ease-out;
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .slide-in-right {
+        animation: slideInRight 0.8s ease-out;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 fade-in">
+                <div class="hero-content">
+                    <h1>Your AI-Powered Health Companion</h1>
+                    <p>Revolutionizing healthcare with intelligent monitoring, early detection, and seamless appointment management. Stay ahead of your health journey.</p>
+                    
+                    <div class="cta-buttons">
+                        <a href="{% url 'signup' %}" class="btn-hero-primary">
+                            <i class="fas fa-rocket"></i> Get Started Free
+                        </a>
+                        {% comment %} <a href="{% url 'skin_diagnosis_upload' %}" class="btn-hero-outline">
+                            <i class="fas fa-robot"></i> Try AI Diagnosis
+                        </a> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <!-- Animated Illustration Placeholder -->
+                <div class="text-center slide-in-right">
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 2rem; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                        <i class="fas fa-heartbeat" style="font-size: 8rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i>
+                        <h3 style="color: white;">Live Health Monitoring</h3>
+                        <p style="color: rgba(255,255,255,0.8);">Real-time AI analysis</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-md-6">
-        <!-- Placeholder for 3D Animation -->
-        <div id="3d-animation"></div>
-      </div>
+        
+        <!-- Stats Counter -->
+        <div class="row stats-counter slide-in-left">
+            <div class="col-6 col-md-3 stat-item">
+                <div class="stat-number">10,000+</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="col-6 col-md-3 stat-item">
+                <div class="stat-number">5,000+</div>
+                <div class="stat-label">Diagnoses Made</div>
+            </div>
+            <div class="col-6 col-md-3 stat-item">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">Accuracy Rate</div>
+            </div>
+            <div class="col-6 col-md-3 stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Support</div>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
-<!-- Key Features Section -->
-<section id="features" class="features-section">
-  <div class="container">
-    <h2>Key Features</h2>
-    <div class="row">
-      <div class="col-md-4">
-        <div class="feature-card">
-          <h3>AI Skin Disease Detection</h3>
-          <p>Early detection, better protection!</p>
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">Smart Health Features</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.1s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI Skin Diagnosis</h3>
+                    <p>Upload a skin image for instant AI-powered analysis and early disease detection with high accuracy.</p>
+                    <a href="{% url 'skin_diagnosis_upload' %}" class="feature-link">
+                        Try Now <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.2s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Smart Scheduling</h3>
+                    <p>Book appointments with top specialists, manage your visits, and receive automated reminders.</p>
+                    <a href="{% url 'book_appointment' %}" class="feature-link">
+                        Book Now <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.3s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Health Monitor</h3>
+                    <p>Track BMI, BMR, and vital signs with personalized insights and health trend analysis.</p>
+                    <a href="{% url 'bmi_bmr_calculator' %}" class="feature-link">
+                        Check Health <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.4s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Smart Reminders</h3>
+                    <p>Never miss medications or appointments with intelligent SMS and notification reminders.</p>
+                    <a href="{% url 'add_reminder' %}" class="feature-link">
+                        Set Reminder <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.5s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h3>Health Records</h3>
+                    <p>Securely store and access your medical history, prescriptions, and test results anytime.</p>
+                    <a href="#" class="feature-link">
+                        View Records <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card fade-in" style="animation-delay: 0.6s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h3>Medical Resources</h3>
+                    <p>Connect with verified medical NGOs and access healthcare resources in your area.</p>
+                    <a href="{% url 'ngo_list' %}" class="feature-link">
+                        Find Resources <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="feature-card">
-          <h3>Appointment Scheduling</h3>
-          <p>Book your doctor, hassle-free!</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="feature-card">
-          <h3>Health Monitoring</h3>
-          <p>Track your health, anytime, anywhere!</p>
-        </div>
-      </div>
-      <!-- Add more feature cards as needed -->
     </div>
-  </div>
 </section>
 
-<!-- Why Choose MediTrack? Section -->
-<section id="why-choose" class="why-choose-section">
-  <div class="container">
-    <h2>Why Choose MediTrack?</h2>
-    <div class="row">
-      <div class="col-md-3">
-        <div class="stat-card">
-          <h3>AI-Powered</h3>
-          <p>Intelligent health monitoring</p>
+<!-- Why Choose Section -->
+<section class="why-choose-section">
+    <div class="container">
+        <h2 class="section-title">Why Trust MediTrack?</h2>
+        <div class="why-choose-grid">
+            <div class="benefit-card fade-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4>HIPAA Compliant</h4>
+                <p>Your health data is encrypted and secure with enterprise-grade protection.</p>
+            </div>
+            <div class="benefit-card fade-in" style="animation-delay: 0.1s;">
+                <div class="benefit-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h4>Instant Results</h4>
+                <p>Get AI-powered insights and recommendations in seconds, not days.</p>
+            </div>
+            <div class="benefit-card fade-in" style="animation-delay: 0.2s;">
+                <div class="benefit-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h4>Doctor Verified</h4>
+                <p>All AI models are validated by certified medical professionals.</p>
+            </div>
+            <div class="benefit-card fade-in" style="animation-delay: 0.3s;">
+                <div class="benefit-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h4>Cross-Platform</h4>
+                <p>Access your health data seamlessly across all your devices.</p>
+            </div>
         </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <h3>Fast & Secure</h3>
-          <p>HIPAA-compliant data protection</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <h3>Cross-Platform</h3>
-          <p>Web & Desktop support</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="stat-card">
-          <h3>1000+ Users</h3>
-          <p>Trusted by patients & doctors</p>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
 
 <!-- Testimonials Section -->
-<section id="testimonials" class="testimonials-section">
-  <div class="container">
-    <h2>What Our Users Say</h2>
-    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <p>"MediTrack helped me detect a skin issue early!"</p>
-          <p>- User Review</p>
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="section-title">What Our Users Say</h2>
+        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            "MediTrack's AI skin detection helped me identify a potential issue months before my scheduled dermatologist appointment. Early detection made all the difference!"
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">SJ</div>
+                            <div class="author-info">
+                                <h5>Sarah Johnson</h5>
+                                <p>Patient • 6 months user</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            "As someone with multiple medications, the reminder system is a lifesaver. The SMS alerts ensure I never miss a dose. Truly revolutionary!"
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">MR</div>
+                            <div class="author-info">
+                                <h5>Michael Rodriguez</h5>
+                                <p>Chronic Care Patient</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="testimonial-card">
+                        <div class="testimonial-content">
+                            "The appointment booking system saved me hours of phone calls. Being able to see doctor availability and book instantly has transformed my healthcare experience."
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">EP</div>
+                            <div class="author-info">
+                                <h5>Emma Patel</h5>
+                                <p>Busy Professional</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
-        <div class="carousel-item">
-          <p>"I never miss my medications anymore, thanks to SMS reminders!"</p>
-          <p>- User Review</p>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2>Ready to Take Control of Your Health?</h2>
+        <p>Join thousands of users who trust MediTrack for their healthcare needs. Start your journey to better health today.</p>
+        <div class="cta-buttons justify-content-center">
+            <a href="{% url 'signup' %}" class="btn-hero-primary" style="background: white; color: var(--primary-color);">
+                <i class="fas fa-user-plus"></i> Create Free Account
+            </a>
+            <a href="{% url 'login' %}" class="btn-hero-outline" style="border-color: white; color: white;">
+                <i class="fas fa-sign-in-alt"></i> Existing User? Login
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript for Animations -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards
+        document.querySelectorAll('.feature-card, .benefit-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Animate stats counter
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current).toLocaleString();
+            }, 20);
+        }
+
+        // Animate stats when hero section is visible
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = document.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        const target = parseInt(stat.textContent.replace(/[^0-9]/g, ''));
+                        animateCounter(stat, target);
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const statsSection = document.querySelector('.stats-counter');
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

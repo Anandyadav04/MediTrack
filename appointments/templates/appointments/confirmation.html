@@ -1,21 +1,351 @@
-<!-- appointments/templates/appointments/confirmation.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white">
-            <h3 class="card-title text-center">Appointment Confirmation</h3>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">Doctor: {{ appointment.doctor }}</h5>
-            <p class="card-text"><strong>Date:</strong> {{ appointment.appointment_date }}</p>
-            <p class="card-text"><strong>Time:</strong> {{ appointment.appointment_time }}</p>
-            <p class="card-text"><strong>Location:</strong> {{ appointment.location }}</p>
+<style>
+    .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
 
-            <div class="d-flex justify-content-between">
-                <a href="{% url 'book_appointment' %}" class="btn btn-secondary">Book Another Appointment</a>
-                <a href="{% url 'my_appointments' %}" class="btn btn-success">My Appointments</a>
+    .confirmation-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .confirmation-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #4a6fa5, #6c8bc7);
+        padding: 1.5rem 2rem;
+        border: none;
+        position: relative;
+    }
+
+    .card-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #4a6fa5, #6c8bc7, #4a6fa5);
+    }
+
+    .card-title {
+        font-weight: 700;
+        font-size: 1.6rem;
+        margin: 0;
+        text-align: center;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Success checkmark */
+    .success-check {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .checkmark-circle {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        border-radius: 50%;
+        position: relative;
+        animation: checkmarkScale 0.6s ease;
+    }
+
+    .checkmark-circle::before {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    @keyframes checkmarkScale {
+        0% { transform: scale(0); }
+        70% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    /* Appointment details - compact */
+    .appointment-details {
+        background: #f8fafd;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #eef2f7;
+    }
+
+    .detail-row {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f4f8;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .detail-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        text-align: right;
+    }
+
+    .detail-value.location {
+        color: #4a6fa5;
+    }
+
+    /* Quick info box */
+    .info-box {
+        background: linear-gradient(135deg, #e8f5e9, #d4edda);
+        border-left: 4px solid #4CAF50;
+        padding: 1rem 1.25rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #155724;
+        line-height: 1.5;
+    }
+
+    .info-box strong {
+        font-weight: 700;
+    }
+
+    /* Action buttons - compact */
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #718096, #4a5568);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #4a5568, #2d3748);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(74, 85, 104, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #2E7D32, #1B5E20);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Appointment ID */
+    .appointment-id {
+        text-align: center;
+        margin: 1rem 0;
+        padding: 0.75rem;
+        background: #f0f4f8;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 1.1rem;
+        color: #4a6fa5;
+        font-weight: 600;
+        border: 1px dashed #cbd5e0;
+    }
+
+    /* Animation for content */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .success-check {
+        animation: fadeInUp 0.5s ease;
+    }
+
+    .appointment-details {
+        animation: fadeInUp 0.5s ease 0.2s both;
+    }
+
+    .info-box {
+        animation: fadeInUp 0.5s ease 0.4s both;
+    }
+
+    .action-buttons {
+        animation: fadeInUp 0.5s ease 0.6s both;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .container {
+            margin: 1rem auto;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .detail-row {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+            text-align: left;
+        }
+
+        .detail-value {
+            text-align: left;
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .card-header {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .appointment-details {
+            padding: 1.25rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+<div class="container mt-4">
+    <div class="confirmation-card">
+        <div class="card-header">
+            <h3 class="card-title">✅ Appointment Confirmed</h3>
+        </div>
+        
+        <div class="card-body">
+            <!-- Success checkmark -->
+            <div class="success-check">
+                <div class="checkmark-circle"></div>
+            </div>
+
+            <!-- Appointment ID -->
+            <div class="appointment-id">
+                Reference: #{{ appointment.id|stringformat:"06d" }}
+            </div>
+
+            <!-- Appointment Details -->
+            <div class="appointment-details">
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>👨‍⚕️</span>
+                        Doctor
+                    </div>
+                    <div class="detail-value">{{ appointment.doctor }}</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>📅</span>
+                        Date
+                    </div>
+                    <div class="detail-value">{{ appointment.appointment_date }}</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>🕐</span>
+                        Time
+                    </div>
+                    <div class="detail-value">{{ appointment.appointment_time }}</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>📍</span>
+                        Location
+                    </div>
+                    <div class="detail-value location">{{ appointment.location }}</div>
+                </div>
+            </div>
+
+            <!-- Quick Info -->
+            <div class="info-box">
+                <strong>Note:</strong> Arrive 15 minutes early. Bring ID and insurance card. Call (123) 456-7890 for changes.
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="{% url 'book_appointment' %}" class="btn btn-secondary">
+                    <span>📅</span> Book Another
+                </a>
+                <a href="{% url 'my_appointments' %}" class="btn btn-success">
+                    <span>📋</span> My Appointments
+                </a>
             </div>
         </div>
     </div>

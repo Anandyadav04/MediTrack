@@ -1,98 +1,800 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ ngo.name }}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f9f9f9;
-            color: #000; /* Set default text color to black */
+<style>
+    :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #6c8bc7;
+        --success-color: #2ecc71;
+        --warning-color: #f39c12;
+        --info-color: #3498db;
+        --light-bg: #f8fafd;
+        --card-shadow: 0 15px 40px rgba(74, 111, 165, 0.15);
+        --card-shadow-hover: 0 25px 60px rgba(74, 111, 165, 0.25);
+    }
+
+    .ngo-detail-wrapper {
+        min-height: calc(100vh - 120px);
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+        padding: 120px 40px 60px;
+    }
+
+    .ngo-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2.5rem;
+    }
+
+    /* Main Content Card */
+    .ngo-main-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #eef2f7;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+
+    .ngo-main-card:hover {
+        box-shadow: var(--card-shadow-hover);
+        transform: translateY(-4px);
+    }
+
+    /* NGO Header */
+    .ngo-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 3rem 2.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ngo-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2ecc71, #3498db, #9b59b6);
+    }
+
+    .ngo-header::after {
+        content: '🏥';
+        position: absolute;
+        right: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 4rem;
+        opacity: 0.2;
+    }
+
+    .ngo-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0 0 0.5rem 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .ngo-location {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    /* NGO Details */
+    .ngo-details {
+        padding: 2.5rem;
+    }
+
+    .detail-section {
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #eef2f7;
+    }
+
+    .detail-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 1.5rem 0;
+    }
+
+    .section-title i {
+        font-size: 1.4rem;
+    }
+
+    /* Info Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 1.25rem;
+        background: var(--light-bg);
+        border-radius: 16px;
+        border: 1px solid #eef2f7;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+        transform: translateY(-3px);
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .info-content {
+        flex: 1;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        font-weight: 600;
+        line-height: 1.5;
+    }
+
+    .info-value a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-value a:hover {
+        color: var(--secondary-color);
+        gap: 12px;
+    }
+
+    /* Services Section */
+    .services-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .service-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #e8f4fd, #d5e9ff);
+        color: #2980b9;
+        padding: 0.75rem 1.25rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: 1px solid rgba(52, 152, 219, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .service-tag:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #d5e9ff, #e8f4fd);
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    }
+
+    .service-tag i {
+        font-size: 0.9rem;
+    }
+
+    /* Sidebar - Feedback Section */
+    .feedback-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    /* Feedback Card */
+    .feedback-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #eef2f7;
+        padding: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .feedback-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .feedback-form {
+        margin-top: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e3e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        color: #2c3e50;
+        background: #fafcff;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.15);
+        background: white;
+        outline: none;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* Rating Stars */
+    .rating-stars {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .star {
+        font-size: 1.8rem;
+        color: #e3e8f0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .star:hover,
+    .star.active {
+        color: #f39c12;
+        transform: scale(1.1);
+    }
+
+    /* Submit Button */
+    .submit-btn {
+        width: 100%;
+        padding: 1.1rem;
+        background: linear-gradient(135deg, var(--success-color), #27ae60);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        background: linear-gradient(135deg, #27ae60, #219653);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
+    }
+
+    /* Feedback List */
+    .feedback-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .feedback-item {
+        background: var(--light-bg);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid #eef2f7;
+        transition: all 0.3s ease;
+    }
+
+    .feedback-item:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .feedback-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .feedback-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-avatar {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .user-info h4 {
+        margin: 0;
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .feedback-date {
+        color: #718096;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    .feedback-rating {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .rating-value {
+        font-weight: 600;
+        color: #f39c12;
+    }
+
+    .feedback-comment {
+        color: #2c3e50;
+        line-height: 1.7;
+        margin: 0;
+        padding: 0.75rem 0;
+        border-top: 1px solid #eef2f7;
+        font-size: 1rem;
+    }
+
+    /* Login Prompt */
+    .login-prompt {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, #e8f4fd, #d5e9ff);
+        border-radius: 16px;
+        border: 2px dashed #3498db;
+    }
+
+    .login-prompt h4 {
+        color: #2980b9;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .login-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 0.85rem 2rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(74, 111, 165, 0.3);
+        color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #718096;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #e3e8f0;
+        margin-bottom: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .ngo-container {
+            grid-template-columns: 1fr;
+            gap: 2rem;
         }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        
+        .feedback-sidebar {
+            order: -1;
         }
+    }
 
-        h2, h3 {
-            color: #2a6496;
+    @media (max-width: 768px) {
+        .ngo-detail-wrapper {
+            padding: 100px 20px 40px;
         }
-
-        p {
-            line-height: 1.6;
-            font-size: 16px;
-            color: #000; /* Ensure text is black */
+        
+        .ngo-header {
+            padding: 2rem 1.5rem;
         }
-
-        a {
-            color: #4e8cbd;
-            text-decoration: none;
+        
+        .ngo-details {
+            padding: 2rem;
         }
-
-        a:hover {
-            text-decoration: underline;
+        
+        .ngo-title {
+            font-size: 2rem;
         }
-
-        button {
-            background-color: #4e8cbd;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
+        
+        .info-grid {
+            grid-template-columns: 1fr;
         }
+    }
 
-        button:hover {
-            background-color: #35779a;
+    @media (max-width: 480px) {
+        .ngo-header {
+            padding: 1.75rem 1.25rem;
         }
-    </style>
-</head>
-<body>
-    <div class="container" style="padding: 60px">
-        <h2>{{ ngo.name }}</h2>
-        <p><strong>Location:</strong> {{ ngo.location }}</p>
-        <p><strong>Services:</strong> {{ ngo.services }}</p>
-        <p><strong>Contact:</strong> {{ ngo.contact_number }}</p>
-        <p><strong>Website:</strong> <a href="{{ ngo.website }}" target="_blank">Visit</a></p>
-        <p><strong>Email:</strong> {{ ngo.email }}</p>
+        
+        .ngo-details {
+            padding: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+        }
+        
+        .feedback-card {
+            padding: 1.5rem;
+        }
+    }
 
-        <h3>Feedback</h3>
-        {% if user.is_authenticated %}
-        <form method="POST">
-            {% csrf_token %}
-            {{ feedback_form.as_p }}
-            <button type="submit">Submit Feedback</button>
-        </form>
-        {% else %}
-        <p><a href="{% url 'login' %}">Log in</a> to submit feedback.</p>
-        {% endif %}
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-        <h4>Previous Feedback:</h4>
-        <ul>
-            {% for feedback in feedbacks %}
-            <li>
-                <strong>{{ feedback.user_name }}</strong> (Rating: {{ feedback.rating }}) <br>
-                {{ feedback.comment }} <br>
-                <em>Submitted on: {{ feedback.date }}</em>
-            </li>
-            {% empty %}
-            <p>No feedback yet.</p>
-            {% endfor %}
-        </ul>
+    .ngo-main-card,
+    .feedback-card {
+        animation: fadeInUp 0.6s ease;
+    }
+
+    .info-item,
+    .feedback-item {
+        animation: fadeInUp 0.6s ease;
+    }
+</style>
+
+<div class="ngo-detail-wrapper">
+    <div class="ngo-container">
+        <!-- Main NGO Details -->
+        <div class="ngo-main-card">
+            <!-- NGO Header -->
+            <div class="ngo-header">
+                <h1 class="ngo-title">{{ ngo.name }}</h1>
+                <p class="ngo-location">
+                    <i class="fas fa-map-marker-alt"></i> {{ ngo.location }}
+                </p>
+            </div>
+
+            <!-- NGO Details -->
+            <div class="ngo-details">
+                <!-- Contact Information -->
+                <div class="detail-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-info-circle"></i> Contact Information
+                    </h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value">{{ ngo.contact_number }}</div>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Email Address</div>
+                                <div class="info-value">{{ ngo.email }}</div>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Website</div>
+                                <div class="info-value">
+                                    <a href="{{ ngo.website }}" target="_blank">
+                                        <i class="fas fa-external-link-alt"></i> Visit Website
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Provided -->
+                <div class="detail-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-hands-helping"></i> Services Provided
+                    </h3>
+                    <div class="services-list">
+                        {% for service in ngo.services_list %}
+                            <span class="service-tag">
+                                <i class="fas fa-check-circle"></i> {{ service }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar - Feedback Section -->
+        <div class="feedback-sidebar">
+            <!-- Feedback Form Card -->
+            <div class="feedback-card">
+                <h3 class="section-title">
+                    <i class="fas fa-comment-dots"></i> Share Your Experience
+                </h3>
+
+                {% if user.is_authenticated %}
+                    <form method="POST" class="feedback-form">
+                        {% csrf_token %}
+                        
+                        <!-- Rating -->
+                        <div class="form-group">
+                            <label class="form-label">Your Rating</label>
+                            <div class="rating-stars" id="rating-stars">
+                                {% for i in "12345"|make_list %}
+                                    <span class="star" data-value="{{ i }}">★</span>
+                                {% endfor %}
+                            </div>
+                            {{ feedback_form.rating.as_hidden }}
+                        </div>
+
+                        <!-- Comment -->
+                        <div class="form-group">
+                            <label class="form-label">Your Feedback</label>
+                            {{ feedback_form.comment }}
+                        </div>
+
+                        <!-- Name -->
+                        <div class="form-group">
+                            <label class="form-label">Your Name (Optional)</label>
+                            {{ feedback_form.user_name }}
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i> Submit Feedback
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="login-prompt">
+                        <h4>Want to share feedback?</h4>
+                        <p>Login to rate and review this NGO.</p>
+                        <a href="{% url 'login' %}" class="login-btn">
+                            <i class="fas fa-sign-in-alt"></i> Login Now
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Previous Feedback Card -->
+            <div class="feedback-card">
+                <h3 class="section-title">
+                    <i class="fas fa-users"></i> Community Feedback
+                    <span class="badge" style="background: var(--primary-color); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9rem;">
+                        {{ feedbacks|length }}
+                    </span>
+                </h3>
+
+                {% if feedbacks %}
+                    <div class="feedback-list">
+                        {% for feedback in feedbacks %}
+                            <div class="feedback-item">
+                                <div class="feedback-header">
+                                    <div class="feedback-user">
+                                        <div class="user-avatar">
+                                            {{ feedback.user_name|first|upper }}
+                                        </div>
+                                        <div class="user-info">
+                                            <h4>{{ feedback.user_name }}</h4>
+                                            <p class="feedback-date">{{ feedback.date|date:"M d, Y" }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="feedback-rating">
+                                        <span class="rating-value">{{ feedback.rating }}</span>
+                                        <span style="color: #f39c12;">★</span>
+                                    </div>
+                                </div>
+                                <p class="feedback-comment">{{ feedback.comment }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-comment-slash"></i>
+                        <h4>No feedback yet</h4>
+                        <p>Be the first to share your experience!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Star rating functionality
+    const stars = document.querySelectorAll('#rating-stars .star');
+    const ratingInput = document.getElementById('id_rating');
+    
+    if (stars.length > 0 && ratingInput) {
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = this.dataset.value;
+                ratingInput.value = value;
+                
+                // Update star display
+                stars.forEach(s => {
+                    if (s.dataset.value <= value) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+            
+            star.addEventListener('mouseenter', function() {
+                const value = this.dataset.value;
+                stars.forEach(s => {
+                    if (s.dataset.value <= value) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+            
+            star.addEventListener('mouseleave', function() {
+                if (!ratingInput.value) {
+                    stars.forEach(s => s.classList.remove('active'));
+                } else {
+                    stars.forEach(s => {
+                        if (s.dataset.value <= ratingInput.value) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Initialize stars if rating already exists
+        if (ratingInput.value) {
+            stars.forEach(star => {
+                if (star.dataset.value <= ratingInput.value) {
+                    star.classList.add('active');
+                }
+            });
+        }
+    }
+    
+    // Add styling to form fields
+    const formControls = document.querySelectorAll('.form-control');
+    formControls.forEach(control => {
+        control.classList.add('form-control');
+        
+        control.addEventListener('focus', function() {
+            this.style.borderColor = '#4a6fa5';
+        });
+        
+        control.addEventListener('blur', function() {
+            if (!this.value) {
+                this.style.borderColor = '#e3e8f0';
+            }
+        });
+    });
+    
+    // Split services string into list
+    const servicesString = "{{ ngo.services }}";
+    if (servicesString) {
+        const servicesList = servicesString.split(',').map(s => s.trim());
+        const servicesContainer = document.querySelector('.services-list');
+        if (servicesContainer) {
+            servicesContainer.innerHTML = servicesList.map(service => 
+                `<span class="service-tag"><i class="fas fa-check-circle"></i> ${service}</span>`
+            ).join('');
+        }
+    }
+    
+    // Add animation to feedback items
+    const feedbackItems = document.querySelectorAll('.feedback-item');
+    feedbackItems.forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.1}s`;
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        item.style.animation = 'fadeInUp 0.6s ease forwards';
+    });
+});
+</script>
 {% endblock %}
 
 

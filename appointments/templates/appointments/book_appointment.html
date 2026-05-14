@@ -3,6 +3,255 @@
 {% load custom_filters %}
 
 {% block content %}
+<style>
+    .container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    h2 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #4a6fa5, #6c8bc7);
+        border-radius: 2px;
+    }
+
+    #appointment-form {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eef2f7;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #appointment-form:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-label::before {
+        content: '✓';
+        color: #4a6fa5;
+        font-size: 0.9em;
+    }
+
+    .form-select, .form-control {
+        padding: 0.85rem 1rem;
+        border: 2px solid #e3e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #fafcff;
+    }
+
+    .form-select:focus, .form-control:focus {
+        border-color: #4a6fa5;
+        box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.15);
+        background-color: white;
+        transform: translateY(-1px);
+    }
+
+    .form-select:disabled, .form-control:read-only {
+        background-color: #f8fafd;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4a6fa5, #6c8bc7);
+        border: none;
+        padding: 1rem 3rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin-top: 1rem;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #3a5a85, #5a7bb7);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(74, 111, 165, 0.3);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .btn-primary::after {
+        content: '→';
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: right 0.3s ease;
+    }
+
+    .btn-primary:hover::after {
+        right: 15px;
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, #fee, #fff5f5);
+        border: 1px solid #fcc;
+        color: #c7254e;
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #dc3545;
+    }
+
+    .alert-danger p {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+    }
+
+    .alert-danger p::before {
+        content: '•';
+        position: absolute;
+        left: 0;
+        color: #dc3545;
+        font-size: 1.2em;
+    }
+
+    /* Custom styling for Flatpickr */
+    .flatpickr-calendar {
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e3e8f0;
+    }
+
+    .flatpickr-day.selected {
+        background: #4a6fa5;
+        border-color: #4a6fa5;
+    }
+
+    .flatpickr-day:hover {
+        background: #eef2f7;
+    }
+
+    /* Loading state for time select */
+    .loading {
+        position: relative;
+        opacity: 0.7;
+    }
+
+    .loading::after {
+        content: 'Loading...';
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        #appointment-form {
+            padding: 1.5rem;
+            margin: 0 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+        }
+
+        .btn-primary::after {
+            display: none;
+        }
+    }
+
+    @media (max-width: 576px) {
+        #appointment-form {
+            padding: 1.25rem;
+        }
+
+        .form-label {
+            font-size: 0.95rem;
+        }
+
+        .form-select, .form-control {
+            padding: 0.75rem;
+        }
+    }
+
+    /* Animation for form elements */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .mb-3 {
+        animation: fadeIn 0.5s ease forwards;
+        opacity: 0;
+    }
+
+    .mb-3:nth-child(1) { animation-delay: 0.1s; }
+    .mb-3:nth-child(2) { animation-delay: 0.2s; }
+    .mb-3:nth-child(3) { animation-delay: 0.3s; }
+
+    /* Success state */
+    .success-message {
+        display: none;
+        background: linear-gradient(135deg, #d4edda, #e8f5e9);
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 1rem;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .success-message i {
+        font-size: 2.5rem;
+        color: #28a745;
+        margin-bottom: 1rem;
+    }
+</style>
 <div class="container my-5" style="padding-top: 60px;">
     <h2 class="text-center mb-4">Book an Appointment</h2>
 

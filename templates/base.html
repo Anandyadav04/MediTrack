@@ -2,20 +2,23 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MediTrack - Your Health Companion{% endblock %}</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -37,10 +40,12 @@
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
             min-height: 100vh;
-            padding-top: 70px; /* Fixed navbar height */
+            padding-top: 70px;
+            /* Fixed navbar height */
             color: var(--text-color);
             position: relative;
-            padding-bottom: 100px; /* Space for footer */
+            padding-bottom: 100px;
+            /* Space for footer */
         }
 
         /* Navbar Styling - FIXED */
@@ -50,7 +55,8 @@
             box-shadow: var(--shadow-medium);
             height: 70px;
             transition: var(--transition);
-            z-index: 1030; /* Ensure navbar is on top */
+            z-index: 1030;
+            /* Ensure navbar is on top */
         }
 
         .navbar.scrolled {
@@ -178,6 +184,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -255,50 +262,58 @@
             flex-direction: column;
         }
 
-footer {
-    background: linear-gradient(135deg, var(--dark-color), #1a252f);
-    color: white;
-    padding: 2rem 0; /* Adjust as needed */
-    position: relative;
-    width: 100%;
-    min-height: 200px; /* Minimum height for footer */
-    display: flex;
-    align-items: center; /* Vertically center content */
-    z-index: 100;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-    margin-top: auto;
-    flex-shrink: 0;
-}
+        footer {
+            background: linear-gradient(135deg, var(--dark-color), #1a252f);
+            color: white;
+            padding: 2rem 0;
+            /* Adjust as needed */
+            position: relative;
+            width: 100%;
+            min-height: 200px;
+            /* Minimum height for footer */
+            display: flex;
+            align-items: center;
+            /* Vertically center content */
+            z-index: 100;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: auto;
+            flex-shrink: 0;
+        }
 
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 2rem; /* Increased gap */
-    width: 100%; /* Full width */
-}
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            /* Increased gap */
+            width: 100%;
+            /* Full width */
+        }
 
-/* Optional: Add more spacing between footer sections */
-.footer-links {
-    display: flex;
-    gap: 3rem; /* Increased from 2rem to 3rem */
-    align-items: center;
-}
+        /* Optional: Add more spacing between footer sections */
+        .footer-links {
+            display: flex;
+            gap: 3rem;
+            /* Increased from 2rem to 3rem */
+            align-items: center;
+        }
 
-.footer-social {
-    display: flex;
-    gap: 1.5rem; /* Increased from 1rem to 1.5rem */
-}
+        .footer-social {
+            display: flex;
+            gap: 1.5rem;
+            /* Increased from 1rem to 1.5rem */
+        }
 
-.footer-social a {
-    color: white;
-    font-size: 1.5rem; /* Larger icons */
-    transition: var(--transition);
-}
+        .footer-social a {
+            color: white;
+            font-size: 1.5rem;
+            /* Larger icons */
+            transition: var(--transition);
+        }
 
         .footer-links a {
             color: rgba(255, 255, 255, 0.7);
@@ -397,17 +412,17 @@ footer {
             .navbar-brand {
                 font-size: 1.5rem;
             }
-            
+
             .navbar-brand img {
                 width: 32px;
                 height: 32px;
             }
-            
+
             .btn {
                 padding: 0.5rem 1rem;
                 font-size: 0.9rem;
             }
-            
+
             body {
                 padding-bottom: 150px;
             }
@@ -421,6 +436,7 @@ footer {
         }
     </style>
 </head>
+
 <body class="page-wrapper">
     <!-- Navbar - FIXED STRUCTURE -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -440,11 +456,9 @@ footer {
             {% endif %}
 
             <!-- Toggle Button - FIXED -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-                    data-bs-target="#navbarSupportedContent" 
-                    aria-controls="navbarSupportedContent" 
-                    aria-expanded="false" 
-                    aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -458,50 +472,50 @@ footer {
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" 
-                           data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             <i class="fas fa-calendar-check me-1"></i>Appointments
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'book_appointment' %}">
-                                <i class="fas fa-plus-circle"></i>Book Appointment
-                            </a></li>
+                                    <i class="fas fa-plus-circle"></i>Book Appointment
+                                </a></li>
                             <li><a class="dropdown-item" href="{% url 'my_appointments' %}">
-                                <i class="fas fa-list"></i>My Appointments
-                            </a></li>
+                                    <i class="fas fa-list"></i>My Appointments
+                                </a></li>
                         </ul>
                     </li>
 
-                    {% comment %} <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'skin_diagnosis_upload' %}">
                             <i class="fas fa-diagnoses me-1"></i>Skin Diagnosis
                         </a>
-                    </li> {% endcomment %}
+                    </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" 
-                           data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             <i class="fas fa-bell me-1"></i>Reminders
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'add_reminder' %}">
-                                <i class="fas fa-plus"></i>Add Reminder
-                            </a></li>
+                                    <i class="fas fa-plus"></i>Add Reminder
+                                </a></li>
                             <li><a class="dropdown-item" href="{% url 'reminder_list' %}">
-                                <i class="fas fa-tasks"></i>Reminder List
-                            </a></li>
+                                    <i class="fas fa-tasks"></i>Reminder List
+                                </a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" 
-                           data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             <i class="fas fa-hands-helping me-1"></i>Resources
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'ngo_list' %}">
-                                <i class="fas fa-hand-holding-medical"></i>Medical NGOs
-                            </a></li>
+                                    <i class="fas fa-hand-holding-medical"></i>Medical NGOs
+                                </a></li>
                         </ul>
                     </li>
                 </ul>
@@ -509,45 +523,47 @@ footer {
                 <!-- User Actions -->
                 <div class="d-flex align-items-center gap-3">
                     {% if user.is_authenticated %}
-                        <div class="dropdown">
-                            <button class="btn btn-link text-white p-0 dropdown-toggle d-flex align-items-center" 
-                                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <div class="user-avatar">
-                                    {{ user.username|first|upper }}
-                                </div>
-                                <span class="ms-2 d-none d-lg-inline">{{ user.username }}</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#">
+                    <div class="dropdown">
+                        <button class="btn btn-link text-white p-0 dropdown-toggle d-flex align-items-center"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar">
+                                {{ user.username|first|upper }}
+                            </div>
+                            <span class="ms-2 d-none d-lg-inline">{{ user.username }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">
                                     <i class="fas fa-user"></i>Profile
                                 </a></li>
-                                <li><a class="dropdown-item" href="#">
+                            <li><a class="dropdown-item" href="#">
                                     <i class="fas fa-cog"></i>Settings
                                 </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{% url 'logout' %}" method="post" class="m-0">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-sign-out-alt"></i>Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                        
-                        <div class="notification-bell d-none d-lg-block">
-                            <i class="fas fa-bell text-white fs-5"></i>
-                            <span class="notification-badge">3</span>
-                        </div>
-                        
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form action="{% url 'logout' %}" method="post" class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="notification-bell d-none d-lg-block">
+                        <i class="fas fa-bell text-white fs-5"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+
                     {% else %}
-                        <a class="btn btn-primary" href="{% url 'login' %}">
-                            <i class="fas fa-sign-in-alt me-1"></i>Login
-                        </a>
-                        <a class="btn btn-outline-light" href="{% url 'signup' %}">
-                            <i class="fas fa-user-plus me-1"></i>Register
-                        </a>
+                    <a class="btn btn-primary" href="{% url 'login' %}">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login
+                    </a>
+                    <a class="btn btn-outline-light" href="{% url 'signup' %}">
+                        <i class="fas fa-user-plus me-1"></i>Register
+                    </a>
                     {% endif %}
                 </div>
             </div>
@@ -587,14 +603,14 @@ footer {
 
     <!-- Custom JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             console.log('Page loaded, Bootstrap should be working');
-            
+
             // Test Bootstrap functionality
             const toggler = document.querySelector('.navbar-toggler');
             if (toggler) {
                 console.log('Navbar toggler found:', toggler);
-                toggler.addEventListener('click', function() {
+                toggler.addEventListener('click', function () {
                     console.log('Navbar toggler clicked');
                 });
             }
@@ -602,7 +618,7 @@ footer {
             // Navbar scroll effect
             const navbar = document.querySelector('.navbar');
             if (navbar) {
-                window.addEventListener('scroll', function() {
+                window.addEventListener('scroll', function () {
                     if (window.scrollY > 50) {
                         navbar.classList.add('scrolled');
                     } else {
@@ -614,7 +630,7 @@ footer {
             // Add active class to current page
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-link');
-            
+
             navLinks.forEach(link => {
                 if (link.getAttribute('href') === currentPath) {
                     link.classList.add('active');
@@ -624,7 +640,7 @@ footer {
             // Smooth scroll to top for homepage
             const brandLink = document.querySelector('.navbar-brand');
             if (brandLink) {
-                brandLink.addEventListener('click', function(e) {
+                brandLink.addEventListener('click', function (e) {
                     if (window.location.pathname === '/' || window.location.pathname === '/home/') {
                         e.preventDefault();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -635,7 +651,7 @@ footer {
             // Initialize dropdowns manually if needed
             const dropdowns = document.querySelectorAll('.dropdown-toggle');
             dropdowns.forEach(dropdown => {
-                dropdown.addEventListener('click', function(e) {
+                dropdown.addEventListener('click', function (e) {
                     console.log('Dropdown clicked:', this);
                 });
             });
@@ -644,13 +660,13 @@ footer {
             function adjustContentPadding() {
                 const navbarHeight = document.querySelector('.navbar').offsetHeight;
                 document.body.style.paddingTop = navbarHeight + 'px';
-                
+
                 const mainContent = document.querySelector('.main-content');
                 const windowHeight = window.innerHeight;
                 const contentHeight = mainContent.offsetHeight;
                 const navbarHeight2 = document.querySelector('.navbar').offsetHeight;
                 const footerHeight = document.querySelector('footer').offsetHeight;
-                
+
                 if (contentHeight + navbarHeight2 + footerHeight < windowHeight) {
                     mainContent.style.minHeight = (windowHeight - navbarHeight2 - footerHeight) + 'px';
                 }
@@ -662,4 +678,5 @@ footer {
     </script>
 
 </body>
+
 </html>

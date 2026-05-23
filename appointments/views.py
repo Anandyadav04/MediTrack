@@ -187,11 +187,11 @@ def update_appointment_status(request, appointment_id, new_status):
         patient_email = appointment.user.email
         if patient_email:
             if new_status == 'Scheduled':
-                subject = f"Appointment Confirmed: Dr. {doctor.name}"
+                subject = f"Appointment Confirmed: {doctor.name}"
                 message = f"""
                 Dear {appointment.user.get_full_name() or appointment.user.username},
 
-                We are pleased to inform you that Dr. {doctor.name} has APPROVED and confirmed your appointment request.
+                We are pleased to inform you that {doctor.name} has APPROVED and confirmed your appointment request.
 
                 Details:
                 - Doctor: {doctor.name} ({doctor.specialty})
@@ -237,7 +237,7 @@ def update_appointment_status(request, appointment_id, new_status):
                     message,
                     settings.DEFAULT_FROM_EMAIL,
                     [patient_email],
-                    fail_silently=True,
+                    fail_silently=False,
                 )
     else:
         messages.error(request, "Invalid status choice.")

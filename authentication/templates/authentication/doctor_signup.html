@@ -1,0 +1,386 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Doctor Registration - MediTrack{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-11 col-lg-9 col-xl-8">
+            <!-- Signup Card -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left Sidebar Info Panel -->
+                    <div class="col-lg-4 text-white p-4 p-md-5 d-flex flex-column justify-content-between" 
+                         style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);">
+                        <div>
+                            <div class="bg-white bg-opacity-10 rounded-circle d-inline-flex p-3 mb-4 shadow-sm">
+                                <i class="fas fa-user-md fa-3x text-white"></i>
+                            </div>
+                            <h3 class="fw-bold mb-3">Join Our Network</h3>
+                            <p class="opacity-90 small mb-4">
+                                Partner with MediTrack to deliver top-tier health services, manage appointments seamlessly, and connect with patients in need.
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="bg-white bg-opacity-20 rounded-circle p-2">
+                                    <i class="fas fa-calendar-check text-white"></i>
+                                </div>
+                                <span class="small fw-medium">Smart Scheduling</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="bg-white bg-opacity-20 rounded-circle p-2">
+                                    <i class="fas fa-shield-alt text-white"></i>
+                                </div>
+                                <span class="small fw-medium">Secure Consultations</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-white bg-opacity-20 rounded-circle p-2">
+                                    <i class="fas fa-chart-line text-white"></i>
+                                </div>
+                                <span class="small fw-medium">Practice Insights</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-top border-white border-opacity-20 mt-4">
+                            <p class="mb-0 small opacity-80">&copy; 2025 MediTrack Pro</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Form Panel -->
+                    <div class="col-lg-8 card-body p-4 p-md-5 bg-white">
+                        <div class="mb-4">
+                            <h2 class="h3 mb-1 fw-bold text-dark">Professional Registration</h2>
+                            <p class="text-muted small">Create your medical practitioner account</p>
+                        </div>
+
+                        <!-- Form Errors -->
+                        {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-exclamation-circle fs-5"></i>
+                                <div>
+                                    <strong class="d-block small">Registration errors:</strong>
+                                    <ul class="mb-0 mt-1 ps-3 small">
+                                        {% for field in form %}
+                                            {% for error in field.errors %}
+                                                <li>{{ field.label }}: {{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for error in form.non_field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+
+                        <!-- Doctor Signup Form -->
+                        <form method="POST" action="{% url 'doctor_signup' %}" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="row g-3">
+                                <!-- Username -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               name="username" 
+                                               class="form-control rounded-3" 
+                                               id="username"
+                                               value="{{ form.username.value|default:'' }}" 
+                                               placeholder="Username"
+                                               required>
+                                        <label for="username" class="text-muted">
+                                            <i class="fas fa-user-circle me-2"></i>Username
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="email" 
+                                               name="email" 
+                                               class="form-control rounded-3" 
+                                               id="email"
+                                               value="{{ form.email.value|default:'' }}" 
+                                               placeholder="Email"
+                                               required>
+                                        <label for="email" class="text-muted">
+                                            <i class="fas fa-envelope me-2"></i>Email Address
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Full Name -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               name="name" 
+                                               class="form-control rounded-3" 
+                                               id="name"
+                                               value="{{ form.name.value|default:'' }}" 
+                                               placeholder="Full Name (e.g. Dr. John Doe)"
+                                               required>
+                                        <label for="name" class="text-muted">
+                                            <i class="fas fa-user-md me-2"></i>Full Name (with Dr.)
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Phone Number -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="tel" 
+                                               name="phone_number" 
+                                               class="form-control rounded-3" 
+                                               id="phone"
+                                               value="{{ form.phone_number.value|default:'' }}" 
+                                               placeholder="Phone Number"
+                                               required>
+                                        <label for="phone" class="text-muted">
+                                            <i class="fas fa-phone me-2"></i>Phone Number
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Specialty -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               name="specialty" 
+                                               class="form-control rounded-3" 
+                                               id="specialty"
+                                               value="{{ form.specialty.value|default:'' }}" 
+                                               placeholder="Specialty (e.g. Cardiologist)"
+                                               required>
+                                        <label for="specialty" class="text-muted">
+                                            <i class="fas fa-stethoscope me-2"></i>Specialty
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Location -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               name="location" 
+                                               class="form-control rounded-3" 
+                                               id="location"
+                                               value="{{ form.location.value|default:'' }}" 
+                                               placeholder="Location (Clinic/Hospital)"
+                                               required>
+                                        <label for="location" class="text-muted">
+                                            <i class="fas fa-map-marker-alt me-2"></i>Location
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Password -->
+                                <div class="col-md-6">
+                                    <div class="form-floating position-relative">
+                                        <input type="password" 
+                                               name="password1" 
+                                               class="form-control rounded-3" 
+                                               id="password1"
+                                               placeholder="Password"
+                                               required>
+                                        <label for="password1" class="text-muted">
+                                            <i class="fas fa-lock me-2"></i>Password
+                                        </label>
+                                        <span class="position-absolute end-0 top-50 translate-middle-y me-3 toggle-password" 
+                                              data-target="password1" style="cursor: pointer;">
+                                            <i class="fas fa-eye text-muted"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Confirm Password -->
+                                <div class="col-md-6">
+                                    <div class="form-floating position-relative">
+                                        <input type="password" 
+                                               name="password2" 
+                                               class="form-control rounded-3" 
+                                               id="password2"
+                                               placeholder="Confirm Password"
+                                               required>
+                                        <label for="password2" class="text-muted">
+                                            <i class="fas fa-lock me-2"></i>Confirm Password
+                                        </label>
+                                        <span class="position-absolute end-0 top-50 translate-middle-y me-3 toggle-password" 
+                                              data-target="password2" style="cursor: pointer;">
+                                            <i class="fas fa-eye text-muted"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Available Days -->
+                                <div class="col-12 mt-3">
+                                    <label class="form-label text-dark fw-semibold mb-2">
+                                        <i class="fas fa-calendar-alt text-teal me-2"></i>Available Working Days
+                                    </label>
+                                    <div class="card bg-light border-0 rounded-3 p-3">
+                                        <div class="row g-2">
+                                            {% for choice in form.available_days.field.choices %}
+                                            <div class="col-6 col-md-4 col-lg-3">
+                                                <div class="form-check custom-checkbox-card p-2 rounded border bg-white">
+                                                    <input class="form-check-input ms-0 me-2" 
+                                                           type="checkbox" 
+                                                           name="available_days" 
+                                                           value="{{ choice.0 }}" 
+                                                           id="day_{{ choice.0 }}">
+                                                    <label class="form-check-label fw-medium text-dark small" for="day_{{ choice.0 }}">
+                                                        {{ choice.1 }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-teal btn-lg rounded-pill py-3 fw-bold text-white shadow-sm">
+                                    <i class="fas fa-user-check me-2"></i>Register Professional Profile
+                                </button>
+                            </div>
+
+                            <!-- Back to Login -->
+                            <div class="text-center mt-4 pt-3 border-top">
+                                <p class="mb-2 text-muted small">Already registered as a professional?</p>
+                                <a href="{% url 'login' %}" class="btn btn-outline-teal rounded-pill px-4 btn-sm">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login to Doctor Portal
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .text-teal {
+        color: #0d9488 !important;
+    }
+    
+    .btn-teal {
+        background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-teal:hover {
+        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
+    }
+    
+    .btn-outline-teal {
+        color: #0d9488;
+        border: 2px solid #0d9488;
+        background: transparent;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-teal:hover {
+        color: white;
+        background-color: #0d9488;
+        border-color: #0d9488;
+        transform: translateY(-2px);
+    }
+
+    .card {
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .form-control:focus {
+        border-color: #0d9488;
+        box-shadow: 0 0 0 0.25rem rgba(13, 148, 136, 0.25);
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #0d9488;
+    }
+    
+    .custom-checkbox-card {
+        display: flex;
+        align-items: center;
+        transition: all 0.2s ease;
+        border: 1px solid #e5e7eb !important;
+        cursor: pointer;
+    }
+
+    .custom-checkbox-card:hover {
+        border-color: #0d9488 !important;
+        background-color: #f0fdfa !important;
+    }
+
+    .form-check-input:checked {
+        background-color: #0d9488;
+        border-color: #0d9488;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle Password Visibility
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+
+        // Add visual link check to checkbox container cards
+        const checkboxCards = document.querySelectorAll('.custom-checkbox-card');
+        checkboxCards.forEach(card => {
+            const input = card.querySelector('input');
+            card.addEventListener('click', function(e) {
+                if(e.target !== input) {
+                    input.checked = !input.checked;
+                    input.dispatchEvent(new Event('change'));
+                }
+            });
+            input.addEventListener('change', function() {
+                if (this.checked) {
+                    card.style.borderColor = '#0d9488';
+                    card.style.backgroundColor = '#f0fdfa';
+                } else {
+                    card.style.borderColor = '#e5e7eb';
+                    card.style.backgroundColor = '#white';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

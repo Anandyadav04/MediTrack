@@ -82,6 +82,11 @@
         font-weight: bold;
     }
 
+    .pending-circle::before {
+        content: '⏳' !important;
+        font-size: 1.8rem !important;
+    }
+
     @keyframes checkmarkScale {
         0% { transform: scale(0); }
         70% { transform: scale(1.1); }
@@ -283,14 +288,24 @@
 </style>
 <div class="container mt-4">
     <div class="confirmation-card">
+        {% if appointment.status == 'Pending' %}
+        <div class="card-header" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+            <h3 class="card-title">⏳ Booking Requested</h3>
+        </div>
+        {% else %}
         <div class="card-header">
             <h3 class="card-title">✅ Appointment Confirmed</h3>
         </div>
+        {% endif %}
         
         <div class="card-body">
             <!-- Success checkmark -->
             <div class="success-check">
+                {% if appointment.status == 'Pending' %}
+                <div class="checkmark-circle pending-circle" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></div>
+                {% else %}
                 <div class="checkmark-circle"></div>
+                {% endif %}
             </div>
 
             <!-- Appointment ID -->
@@ -331,11 +346,29 @@
                     </div>
                     <div class="detail-value location">{{ appointment.location }}</div>
                 </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>🛡️</span>
+                        Status
+                    </div>
+                    <div class="detail-value">
+                        {% if appointment.status == 'Pending' %}
+                        <span class="badge bg-warning text-dark px-3 py-1 rounded-pill">Pending Approval</span>
+                        {% else %}
+                        <span class="badge bg-success px-3 py-1 rounded-pill">Scheduled</span>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
 
             <!-- Quick Info -->
             <div class="info-box">
+                {% if appointment.status == 'Pending' %}
+                <strong>Note:</strong> Your appointment request is currently **pending doctor approval**. We have sent a request notification to the doctor, and you will receive a confirmation email as soon as they approve or adjust the booking.
+                {% else %}
                 <strong>Note:</strong> Arrive 15 minutes early. Bring ID and insurance card. Call (123) 456-7890 for changes.
+                {% endif %}
             </div>
 
             <!-- Action Buttons -->

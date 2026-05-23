@@ -435,6 +435,7 @@
             flex-direction: column;
         }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body class="page-wrapper">
@@ -465,6 +466,20 @@
             <!-- Navbar Content -->
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {% if user.is_authenticated and user.doctor_profile %}
+                    <!-- Doctor Navigation Links -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'doctor_dashboard' %}">
+                            <i class="fas fa-columns me-1"></i>Doctor Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ngo_list' %}">
+                            <i class="fas fa-hand-holding-medical me-1"></i>Medical NGOs
+                        </a>
+                    </li>
+                    {% else %}
+                    <!-- Patient/Standard Navigation Links -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'bmi_bmr_calculator' %}">
                             <i class="fas fa-heartbeat me-1"></i>Health Monitor
@@ -518,6 +533,7 @@
                                 </a></li>
                         </ul>
                     </li>
+                    {% endif %}
                 </ul>
 
                 <!-- User Actions -->
@@ -526,15 +542,21 @@
                     <div class="dropdown">
                         <button class="btn btn-link text-white p-0 dropdown-toggle d-flex align-items-center"
                             type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="user-avatar">
+                            <div class="user-avatar" style="background: linear-gradient(135deg, {% if user.doctor_profile %}#0d9488, #0f766e{% else %}var(--accent-color), #27ae60{% endif %});">
                                 {{ user.username|first|upper }}
                             </div>
                             <span class="ms-2 d-none d-lg-inline">{{ user.username }}</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            {% if user.doctor_profile %}
+                            <li><a class="dropdown-item" href="{% url 'doctor_dashboard' %}">
+                                    <i class="fas fa-columns"></i>Doctor Dashboard
+                                </a></li>
+                            {% else %}
                             <li><a class="dropdown-item" href="#">
                                     <i class="fas fa-user"></i>Profile
                                 </a></li>
+                            {% endif %}
                             <li><a class="dropdown-item" href="#">
                                     <i class="fas fa-cog"></i>Settings
                                 </a></li>
@@ -676,7 +698,7 @@
             window.addEventListener('resize', adjustContentPadding);
         });
     </script>
-
+    {% block extra_js %}{% endblock %}
 </body>
 
 </html>

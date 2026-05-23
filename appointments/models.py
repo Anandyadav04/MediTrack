@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from datetime import datetime  
 
 class Doctor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor_profile', null=True, blank=True)
     name = models.CharField(max_length=100)
     specialty = models.CharField(max_length=100)
     available_days = models.CharField(max_length=100)  # e.g. "Monday, Wednesday, Friday"
@@ -51,7 +52,7 @@ class Appointment(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
-    status = models.CharField(max_length=20, choices=[('Scheduled', 'Scheduled'), ('Completed', 'Completed'), ('Cancelled', 'Cancelled')], default='Scheduled')
+    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Scheduled', 'Scheduled'), ('Completed', 'Completed'), ('Cancelled', 'Cancelled')], default='Pending')
     @property
     def is_upcoming(self):
         from django.utils import timezone

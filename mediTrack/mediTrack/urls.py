@@ -17,6 +17,25 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.http import JsonResponse
+
+def api_root_welcome(request):
+    return JsonResponse({
+        "status": "online",
+        "name": "MediTrack REST API Backend",
+        "version": "v1.0",
+        "endpoints": {
+            "auth": "/api/v1/auth/",
+            "health": "/api/v1/health/",
+            "skindiagnosis": "/api/v1/skindiagnosis/",
+            "appointments": "/api/v1/appointments/",
+            "reminders": "/api/v1/reminders/",
+            "rentals": "/api/v1/rentals/",
+            "ngos": "/api/v1/ngos/",
+            "admin": "/admin/"
+        }
+    })
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('authentication.api_urls')),
@@ -26,14 +45,7 @@ urlpatterns = [
     path('api/v1/reminders/', include('reminders.api_urls')),
     path('api/v1/rentals/', include('rental.api_urls')),
     path('api/v1/ngos/', include('ngo.api_urls')),
-    path('', include('home.urls')),
-    path('auth/', include('authentication.urls')),
-    path('reminders/', include('reminders.urls')),  # Include URLs for the reminders app
-    path('health/', include('health_monitoring.urls')),
-    path('appointments/', include('appointments.urls')),
-    path('rental/', include('rental.urls')),
-    path('ngo/', include('ngo.urls')),
-    path("skindiagnosis/", include("skin_diagnosis.urls")),
+    path('', api_root_welcome, name='api_root_welcome'),
 ]
 
 

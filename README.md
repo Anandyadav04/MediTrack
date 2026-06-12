@@ -156,18 +156,6 @@ Open `http://localhost:5173/` in your browser to view the application.
 
 ---
 
-## 🔑 Demo & Test Credentials
-
-For evaluation, you can log in using the pre-configured accounts:
-
-| Role | Username | Password |
-| :--- | :--- | :--- |
-| **Patient Profile** | `ram` | `Anand@123` |
-| **Doctor Profile** | `john` | `Anand@123` |
-| **Superuser / Admin** | `Anand` | `Anand@123` |
-
----
-
 ## 📬 Contacts & Profile
 - **Email**: ay108679@gmail.com
 - **GitHub**: [@Anandyadav04](https://github.com/Anandyadav04)

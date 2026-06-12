@@ -24,6 +24,8 @@ urlpatterns = [
     path('api/v1/skindiagnosis/', include('skin_diagnosis.api_urls')),
     path('api/v1/appointments/', include('appointments.api_urls')),
     path('api/v1/reminders/', include('reminders.api_urls')),
+    path('api/v1/rentals/', include('rental.api_urls')),
+    path('api/v1/ngos/', include('ngo.api_urls')),
     path('', include('home.urls')),
     path('auth/', include('authentication.urls')),
     path('reminders/', include('reminders.urls')),  # Include URLs for the reminders app

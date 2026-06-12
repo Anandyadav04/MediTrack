@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, Shield, Zap, UserCheck, Smartphone, ChevronLeft, ChevronRight, Rocket, Star, Heart } from 'lucide-react';
+import { Activity, Shield, Zap, UserCheck, Smartphone, ChevronLeft, ChevronRight, Rocket, Star, Heart, Truck, HeartHandshake } from 'lucide-react';
 
 const TESTIMONIALS = [
   {
@@ -174,6 +174,18 @@ const LandingPage = () => {
             <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Medication Reminders</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
               Configure automatic medication notifications delivered directly via Twilio SMS and email logs.
+            </p>
+          </div>
+          <div className="glass-panel" style={{ padding: '32px', textAlign: 'left' }}>
+            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Equipment Rentals</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
+              Rent essential medical equipment like wheelchairs, oxygen cylinders, and beds from verified local coordinators.
+            </p>
+          </div>
+          <div className="glass-panel" style={{ padding: '32px', textAlign: 'left' }}>
+            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Medical Resources</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
+              Connect with verified health NGOs offering free check-ups, diagnostic camps, and financial assistance.
             </p>
           </div>
         </div>

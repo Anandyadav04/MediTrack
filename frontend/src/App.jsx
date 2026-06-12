@@ -9,7 +9,9 @@ import SkinDiagnosisPage from './pages/SkinDiagnosisPage';
 import AppointmentsPage from './pages/AppointmentsPage';
 import RemindersPage from './pages/RemindersPage';
 import LandingPage from './pages/LandingPage';
-import { Activity, LogOut, ShieldAlert, Calendar, Clock, Heart, Thermometer, User } from 'lucide-react';
+import RentalsPage from './pages/RentalsPage';
+import NgosPage from './pages/NgosPage';
+import { Activity, LogOut, ShieldAlert, Calendar, Clock, Heart, Thermometer, User, Truck, HeartHandshake, ChevronDown } from 'lucide-react';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -202,6 +204,60 @@ const HomePage = () => {
             Schedule medication SMS/Email alerts via Celery task execution queues.
           </p>
         </Link>
+
+        {/* Equipment Rentals card */}
+        <Link to="/rentals" className="glass-panel" style={{
+          padding: '24px',
+          textAlign: 'left',
+          display: 'block',
+          color: 'inherit',
+          transition: 'all var(--transition-fast)'
+        }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: 'var(--radius-md)',
+            backgroundColor: 'rgba(14, 165, 233, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '16px',
+            color: 'var(--brand-secondary)'
+          }}>
+            <Truck size={24} />
+          </div>
+          <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Equipment Rentals</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
+            Rent medical devices, wheelchairs, oxygen cylinders, and healthcare equipment.
+          </p>
+        </Link>
+
+        {/* Medical Resources card */}
+        <Link to="/ngos" className="glass-panel" style={{
+          padding: '24px',
+          textAlign: 'left',
+          display: 'block',
+          color: 'inherit',
+          transition: 'all var(--transition-fast)'
+        }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: 'var(--radius-md)',
+            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '16px',
+            color: 'var(--success)'
+          }}>
+            <HeartHandshake size={24} />
+          </div>
+          <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Medical Resources</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
+            Connect with verified health NGOs offering free check-ups, camps, and assistance.
+          </p>
+        </Link>
       </div>
     </div>
   );
@@ -210,30 +266,108 @@ const HomePage = () => {
 const Navigation = () => {
   const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = React.useRef(null);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <nav className="navbar glass-panel">
-      <Link to="/" className="nav-brand">
+    <nav className="navbar glass-panel" style={{ position: 'relative', zIndex: 1000 }}>
+      <Link to="/" className="nav-brand" onClick={() => setDropdownOpen(false)}>
         <Activity size={28} color="var(--brand-primary)" />
         <span>MediTrack</span>
       </Link>
       
       {isAuthenticated ? (
-        <ul className="nav-links">
-          <li><Link to="/" className="nav-item">Dashboard</Link></li>
+        <ul className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '24px', listStyle: 'none' }}>
+          <li>
+            <Link to="/" className="nav-item" onClick={() => setDropdownOpen(false)}>
+              Dashboard
+            </Link>
+          </li>
+          
           {!user?.is_doctor && (
             <>
-              <li><Link to="/diagnosis" className="nav-item">Skin Diagnosis</Link></li>
-              <li><Link to="/health" className="nav-item">Health Tracker</Link></li>
-              <li><Link to="/appointments" className="nav-item">Appointments</Link></li>
-              <li><Link to="/reminders" className="nav-item">Reminders</Link></li>
+              <li>
+                <Link to="/appointments" className="nav-item" onClick={() => setDropdownOpen(false)}>
+                  Appointments
+                </Link>
+              </li>
+              
+              {/* Services Dropdown */}
+              <li ref={dropdownRef} style={{ position: 'relative' }}>
+                <button 
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="nav-item"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontFamily: 'inherit',
+                    fontSize: 'inherit',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '8px 12px',
+                    borderRadius: 'var(--radius-sm)',
+                    transition: 'all var(--transition-fast)',
+                    color: dropdownOpen ? 'var(--brand-primary)' : 'var(--text-secondary)'
+                  }}
+                >
+                  Services <ChevronDown size={14} style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                
+                {dropdownOpen && (
+                  <div className="glass-panel fade-in" style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    marginTop: '8px',
+                    width: '200px',
+                    padding: '8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    boxShadow: 'var(--shadow-lg)',
+                    zIndex: 1010,
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--bg-secondary)'
+                  }}>
+                    <Link to="/diagnosis" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      🧠 Skin Diagnosis
+                    </Link>
+                    <Link to="/health" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      📊 Health Tracker
+                    </Link>
+                    <Link to="/reminders" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      ⏰ Reminders
+                    </Link>
+                    <Link to="/rentals" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      📦 Rentals
+                    </Link>
+                    <Link to="/ngos" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                      🤝 NGOs
+                    </Link>
+                  </div>
+                )}
+              </li>
             </>
           )}
+          
           <li style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: '12px' }}>
             <span style={{ fontSize: '14px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <User size={16} />
@@ -301,6 +435,18 @@ const App = () => {
             <Route path="/reminders" element={
               <ProtectedRoute>
                 <RemindersPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/rentals" element={
+              <ProtectedRoute>
+                <RentalsPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/ngos" element={
+              <ProtectedRoute>
+                <NgosPage />
               </ProtectedRoute>
             } />
 

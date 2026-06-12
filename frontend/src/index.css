@@ -266,3 +266,20 @@ a:hover {
 .fade-in {
   animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Dropdown Menu Items */
+.dropdown-item {
+  display: block;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--brand-primary);
+  padding-left: 18px; /* Micro-interaction slide right effect */
+}

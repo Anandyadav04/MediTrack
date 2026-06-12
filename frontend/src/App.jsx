@@ -380,13 +380,27 @@ const Navigation = () => {
           </li>
         </ul>
       ) : (
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <Link to="/login" className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '14px' }}>
-            Sign In
-          </Link>
-          <Link to="/signup" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '14px' }}>
-            Register
-          </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+          <ul className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '24px', listStyle: 'none' }}>
+            <li>
+              <a href="/#features" className="nav-item">Features</a>
+            </li>
+            <li>
+              <a href="/#why-trust" className="nav-item">Why Us</a>
+            </li>
+            <li>
+              <a href="/#testimonials" className="nav-item">Testimonials</a>
+            </li>
+          </ul>
+          
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <Link to="/login" className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '14px' }}>
+              Sign In
+            </Link>
+            <Link to="/signup" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '14px' }}>
+              Register
+            </Link>
+          </div>
         </div>
       )}
     </nav>

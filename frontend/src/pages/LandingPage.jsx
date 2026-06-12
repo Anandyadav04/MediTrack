@@ -141,7 +141,7 @@ const LandingPage = () => {
       </section>
 
       {/* ⚡ Features Grid */}
-      <section style={{ textAlign: 'center' }}>
+      <section id="features" style={{ textAlign: 'center' }}>
         <h2 style={{ fontSize: '32px', marginBottom: '16px' }}>Smart Health Features</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '48px', maxWidth: '600px', marginInline: 'auto' }}>
           Empower yourself with intelligent features designed to make healthcare management simple, fast, and secure.
@@ -152,47 +152,82 @@ const LandingPage = () => {
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '24px'
         }}>
-          <div className="glass-panel" style={{ padding: '32px', textAlign: 'left' }}>
-            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>AI Skin Diagnosis</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-              Upload clinical pictures of skin irritations for instant, lightweight deep learning classification.
-            </p>
-          </div>
-          <div className="glass-panel" style={{ padding: '32px', textAlign: 'left' }}>
-            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Smart Scheduling</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-              Select clinic slots, browse verified practitioners, and submit pending appointment requests instantly.
-            </p>
-          </div>
-          <div className="glass-panel" style={{ padding: '32px', textAlign: 'left' }}>
-            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Health Monitoring</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-              Log health details to compute current BMI/BMR statistics and maintain history charts over time.
-            </p>
-          </div>
-          <div className="glass-panel" style={{ padding: '32px', textAlign: 'left' }}>
-            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Medication Reminders</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-              Configure automatic medication notifications delivered directly via Twilio SMS and email logs.
-            </p>
-          </div>
-          <div className="glass-panel" style={{ padding: '32px', textAlign: 'left' }}>
-            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Equipment Rentals</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-              Rent essential medical equipment like wheelchairs, oxygen cylinders, and beds from verified local coordinators.
-            </p>
-          </div>
-          <div className="glass-panel" style={{ padding: '32px', textAlign: 'left' }}>
-            <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Medical Resources</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-              Connect with verified health NGOs offering free check-ups, diagnostic camps, and financial assistance.
-            </p>
-          </div>
+          <Link to="/diagnosis" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
+            <div>
+              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>AI Skin Diagnosis</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
+                Upload clinical pictures of skin irritations for instant, lightweight deep learning classification.
+              </p>
+            </div>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
+              Check Now →
+            </span>
+          </Link>
+          
+          <Link to="/appointments" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
+            <div>
+              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Smart Scheduling</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
+                Select clinic slots, browse verified practitioners, and submit pending appointment requests instantly.
+              </p>
+            </div>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
+              Check Now →
+            </span>
+          </Link>
+
+          <Link to="/health" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
+            <div>
+              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Health Monitoring</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
+                Log health details to compute current BMI/BMR statistics and maintain history charts over time.
+              </p>
+            </div>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
+              Check Now →
+            </span>
+          </Link>
+
+          <Link to="/reminders" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
+            <div>
+              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Medication Reminders</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
+                Configure automatic medication notifications delivered directly via Twilio SMS and email logs.
+              </p>
+            </div>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
+              Check Now →
+            </span>
+          </Link>
+
+          <Link to="/rentals" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
+            <div>
+              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Equipment Rentals</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
+                Rent essential medical equipment like wheelchairs, oxygen cylinders, and beds from verified local coordinators.
+              </p>
+            </div>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
+              Check Now →
+            </span>
+          </Link>
+
+          <Link to="/ngos" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
+            <div>
+              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Medical Resources</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
+                Connect with verified health NGOs offering free check-ups, diagnostic camps, and financial assistance.
+              </p>
+            </div>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
+              Check Now →
+            </span>
+          </Link>
         </div>
       </section>
 
       {/* 🛡️ Benefits Section */}
-      <section style={{ textAlign: 'center' }}>
+      <section id="why-trust" style={{ textAlign: 'center' }}>
         <h2 style={{ fontSize: '32px', marginBottom: '40px' }}>Why Trust MediTrack?</h2>
         <div style={{
           display: 'grid',
@@ -223,7 +258,7 @@ const LandingPage = () => {
       </section>
 
       {/* 💬 Testimonials */}
-      <section className="glass-panel" style={{ padding: '48px 32px', position: 'relative', overflow: 'hidden' }}>
+      <section id="testimonials" className="glass-panel" style={{ padding: '48px 32px', position: 'relative', overflow: 'hidden' }}>
         <h2 style={{ fontSize: '28px', marginBottom: '32px', textAlign: 'center' }}>What Our Users Say</h2>
         
         <div style={{ minHeight: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>

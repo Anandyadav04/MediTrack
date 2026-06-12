@@ -57,6 +57,8 @@ class Appointment(models.Model):
     def is_upcoming(self):
         from django.utils import timezone
         appointment_datetime = datetime.combine(self.appointment_date, self.appointment_time)
+        if timezone.is_aware(timezone.now()):
+            appointment_datetime = timezone.make_aware(appointment_datetime, timezone.get_current_timezone())
         return appointment_datetime > timezone.now()
 
     def __str__(self):

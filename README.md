@@ -2,14 +2,17 @@
 
 MediTrack is a premium healthcare management platform engineered with a decoupled architecture. It combines a highly responsive React Single Page Application (SPA) with a secure, headless Django REST Framework (DRF) API to deliver high-performance AI diagnosis, real-time tracking, and smooth coordination.
 
+🌐 **Live Application**: [https://meditrack-healthpro.vercel.app/](https://meditrack-healthpro.vercel.app/)
+
 ---
+
 
 ## 🏗️ System Architecture
 
 ```mermaid
 graph TD
     Client[React Client SPA<br/>Vite / Port 5173] <-->|JSON API / JWT Auth| Backend[Headless Django REST API<br/>Port 8000]
-    Backend <--> DB[(SQLite Database)]
+    Backend <--> DB[(SQLite / PostgreSQL DB)]
     Backend <-->|Trigger Tasks| Celery[Celery Task Queue<br/>SMS & Email Worker]
     Celery <--> Redis[(Redis Message Broker<br/>Port 6379)]
     Backend <--> TF[TensorFlow Engine<br/>AI Skin Diagnosis CNN]
@@ -156,7 +159,19 @@ Open `http://localhost:5173/` in your browser to view the application.
 
 ---
 
+## 🌐 Production Deployment
+
+The production environment is hosted as a fully decoupled live architecture:
+
+- **Frontend Application (SPA)**: Hosted on **Vercel** ([https://meditrack-healthpro.vercel.app/](https://meditrack-healthpro.vercel.app/))
+- **Backend API (DRF)**: Hosted on **Render** ([https://meditrack-api-sx47.onrender.com](https://meditrack-api-sx47.onrender.com))
+- **Production Database**: Managed **PostgreSQL** database on Render
+- **Message Broker & Task Queue**: Managed **Redis** instance & **Celery** Background Worker on Render
+
+---
+
 ## 📬 Contacts & Profile
 - **Email**: ay108679@gmail.com
 - **GitHub**: [@Anandyadav04](https://github.com/Anandyadav04)
 - **LinkedIn**: [Anand Yadav](https://www.linkedin.com/in/anand-yadav-149414356)
+

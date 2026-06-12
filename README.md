@@ -1,6 +1,6 @@
 # MediTrack 🩺 — Intelligent Digital Healthcare Portal
 
-MediTrack is a premium, full-featured modern healthcare management platform. The application has been fully migrated from a traditional monolithic structure to a decoupled architecture consisting of a **React Single Page Application (SPA)** frontend and a **Django REST Framework (DRF)** API backend.
+MediTrack is a premium healthcare management platform engineered with a decoupled architecture. It combines a highly responsive React Single Page Application (SPA) with a secure, headless Django REST Framework (DRF) API to deliver high-performance AI diagnosis, real-time tracking, and smooth coordination.
 
 ---
 

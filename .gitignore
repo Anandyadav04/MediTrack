@@ -11,3 +11,4 @@ node_modules/
 dist/
 user.txt
 Redis-x64-3.0.504
+staticfiles

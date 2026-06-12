@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import client from './api/client';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import HealthTrackerPage from './pages/HealthTrackerPage';
 import SkinDiagnosisPage from './pages/SkinDiagnosisPage';
 import AppointmentsPage from './pages/AppointmentsPage';
 import RemindersPage from './pages/RemindersPage';
+import LandingPage from './pages/LandingPage';
 import { Activity, LogOut, ShieldAlert, Calendar, Clock, Heart, Thermometer, User } from 'lucide-react';
 
 // Protect routes that require authentication
@@ -20,22 +22,78 @@ const ProtectedRoute = ({ children }) => {
 // Temp pages (to be replaced in subsequent phases)
 const HomePage = () => {
   const { user } = useAuth();
+  const [upcoming, setUpcoming] = useState(null);
+
+  useEffect(() => {
+    const fetchUpcoming = async () => {
+      try {
+        const res = await client.get('appointments/bookings/');
+        const booked = res.data.find(a => a.status === 'Scheduled' && a.is_upcoming);
+        setUpcoming(booked || null);
+      } catch (err) {
+        console.error('Failed to load upcoming appt');
+      }
+    };
+    fetchUpcoming();
+  }, []);
+
   return (
-    <div className="fade-in">
-      <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '36px', textAlign: 'left', marginBottom: '8px' }}>
-          Welcome back, {user?.username || 'User'} 👋
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', textAlign: 'left' }}>
-          Your digital health dashboard overview
-        </p>
+    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      {/* Welcome Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '40px',
+        color: '#ffffff',
+        textAlign: 'left',
+        boxShadow: 'var(--shadow-lg)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '24px'
+      }}>
+        <div>
+          <span className="badge" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', marginBottom: '8px' }}>
+            Patient Portal Dashboard
+          </span>
+          <h1 style={{ fontSize: '32px', color: '#ffffff', marginBottom: '6px' }}>
+            Welcome back, {user?.username || 'User'} 👋
+          </h1>
+          <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '15px' }}>
+            Access all your healthcare monitoring, scheduling and prescription logs.
+          </p>
+        </div>
+        
+        {upcoming && (
+          <div className="glass-panel" style={{ 
+            padding: '16px 24px', 
+            textAlign: 'left', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '16px', 
+            borderLeft: '4px solid var(--success)', 
+            maxWidth: '380px',
+            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            borderColor: 'rgba(255, 255, 255, 0.15)'
+          }}>
+            <Calendar size={32} color="var(--success)" />
+            <div>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', textTransform: 'uppercase' }}>Next Appointment</div>
+              <div style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }}>Dr. {upcoming.doctor_detail?.name}</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)' }}>
+                {upcoming.appointment_date} @ {upcoming.appointment_time.substring(0, 5)}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
+      {/* Quick Tools Grid */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '24px',
-        marginTop: '24px'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+        gap: '24px'
       }}>
         {/* Skin Diagnosis card */}
         <Link to="/diagnosis" className="glass-panel" style={{
@@ -59,7 +117,7 @@ const HomePage = () => {
             <Thermometer size={24} />
           </div>
           <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>AI Skin Diagnosis</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
             Upload skin scans and leverage deep learning models for classification.
           </p>
         </Link>
@@ -76,7 +134,7 @@ const HomePage = () => {
             width: '48px',
             height: '48px',
             borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(236, 72, 153, 0.15)',
+            backgroundColor: 'rgba(52, 211, 153, 0.15)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -86,7 +144,7 @@ const HomePage = () => {
             <Heart size={24} />
           </div>
           <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Health Monitoring</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
             Calculate instantly and keep logs of your weight, height, BMR, and BMI metrics.
           </p>
         </Link>
@@ -113,7 +171,7 @@ const HomePage = () => {
             <Calendar size={24} />
           </div>
           <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Book Appointment</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
             Browse available doctors, check schedules, and reserve appointment slots.
           </p>
         </Link>
@@ -140,7 +198,7 @@ const HomePage = () => {
             <Clock size={24} />
           </div>
           <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Reminders</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
             Schedule medication SMS/Email alerts via Celery task execution queues.
           </p>
         </Link>
@@ -168,14 +226,18 @@ const Navigation = () => {
       {isAuthenticated ? (
         <ul className="nav-links">
           <li><Link to="/" className="nav-item">Dashboard</Link></li>
-          <li><Link to="/diagnosis" className="nav-item">Skin Diagnosis</Link></li>
-          <li><Link to="/health" className="nav-item">Health Tracker</Link></li>
-          <li><Link to="/appointments" className="nav-item">Appointments</Link></li>
-          <li><Link to="/reminders" className="nav-item">Reminders</Link></li>
+          {!user?.is_doctor && (
+            <>
+              <li><Link to="/diagnosis" className="nav-item">Skin Diagnosis</Link></li>
+              <li><Link to="/health" className="nav-item">Health Tracker</Link></li>
+              <li><Link to="/appointments" className="nav-item">Appointments</Link></li>
+              <li><Link to="/reminders" className="nav-item">Reminders</Link></li>
+            </>
+          )}
           <li style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: '12px' }}>
             <span style={{ fontSize: '14px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <User size={16} />
-              {user?.username}
+              {user?.is_doctor ? `Dr. ${user?.username}` : user?.username}
             </span>
             <button onClick={handleLogout} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '14px' }}>
               <LogOut size={14} />
@@ -197,6 +259,14 @@ const Navigation = () => {
   );
 };
 
+const HomeWrapper = () => {
+  const { isAuthenticated, user, loading } = useAuth();
+  if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading application...</div>;
+  if (!isAuthenticated) return <LandingPage />;
+  if (user?.is_doctor) return <AppointmentsPage />;
+  return <HomePage />;
+};
+
 const App = () => {
   return (
     <AuthProvider>
@@ -208,11 +278,7 @@ const App = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             
-            <Route path="/" element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            } />
+            <Route path="/" element={<HomeWrapper />} />
             
             <Route path="/diagnosis" element={
               <ProtectedRoute>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import client from '../api/client';
-import { Calendar, User, Clock, MapPin, Check, X, ShieldAlert, Sparkles, PlusCircle, Trash } from 'lucide-react';
+import { Calendar, User, Clock, MapPin, Check, X, ShieldAlert, Sparkles, PlusCircle, Trash, Stethoscope, Sliders, CheckSquare, Square } from 'lucide-react';
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const TIME_SLOTS = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
+const DEFAULT_TIME_SLOTS = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
 
 const AppointmentsPage = () => {
   const { user } = useAuth();
@@ -28,6 +28,7 @@ const AppointmentsPage = () => {
   const [doctorStats, setDoctorStats] = useState(null);
   const [workLocation, setWorkLocation] = useState('');
   const [workDays, setWorkDays] = useState([]);
+  const [workSlots, setWorkSlots] = useState([]);
   const [updatingAvailability, setUpdatingAvailability] = useState(false);
 
   const loadData = async () => {
@@ -45,6 +46,11 @@ const AppointmentsPage = () => {
         
         const daysStr = statsRes.data.availability.available_days || '';
         setWorkDays(daysStr ? daysStr.split(', ') : []);
+
+        const slotsObj = statsRes.data.availability.available_times || {};
+        // Get slots list from any of the day keys or fall back to defaults
+        const slotsList = Object.values(slotsObj)[0] || DEFAULT_TIME_SLOTS;
+        setWorkSlots(slotsList);
       } else {
         // Load doctors list
         const docsRes = await client.get('appointments/doctors/');
@@ -86,7 +92,6 @@ const AppointmentsPage = () => {
     fetchSlots();
   }, [selectedDoctorId, bookingDate]);
 
-  // Handle patient booking submission
   const handleBookAppointment = async (e) => {
     e.preventDefault();
     setError('');
@@ -116,7 +121,6 @@ const AppointmentsPage = () => {
     }
   };
 
-  // Handle patient deleting appointment
   const handleDeleteAppointment = async (apptId) => {
     if (!window.confirm('Are you sure you want to cancel this appointment?')) return;
     try {
@@ -128,18 +132,16 @@ const AppointmentsPage = () => {
     }
   };
 
-  // Handle doctor action (Scheduled, Completed, Cancelled)
   const handleUpdateStatus = async (apptId, status) => {
     try {
       await client.post(`appointments/bookings/${apptId}/status/`, { status });
-      setSuccess(`Appointment marked as ${status}.`);
+      setSuccess(`Appointment status successfully updated to ${status}.`);
       loadData();
     } catch (err) {
       setError('Failed to update status.');
     }
   };
 
-  // Handle doctor availability updates
   const handleUpdateAvailability = async (e) => {
     e.preventDefault();
     setError('');
@@ -150,9 +152,9 @@ const AppointmentsPage = () => {
       await client.post('appointments/doctor/availability/', {
         available_days: workDays,
         location: workLocation,
-        available_slots: TIME_SLOTS // Use default slots
+        available_slots: workSlots
       });
-      setSuccess('Working days & location updated successfully!');
+      setSuccess('Working days, location, and hours updated successfully!');
       loadData();
     } catch (err) {
       setError('Failed to update availability.');
@@ -169,75 +171,157 @@ const AppointmentsPage = () => {
     }
   };
 
+  const handleSlotToggle = (slot) => {
+    if (workSlots.includes(slot)) {
+      setWorkSlots(workSlots.filter((s) => s !== slot));
+    } else {
+      setWorkSlots([...workSlots, slot]);
+    }
+  };
+
   if (fetching) {
-    return <div style={{ padding: '40px', textAlign: 'center' }}>Syncing dashboard data...</div>;
+    return <div style={{ padding: '80px', textAlign: 'center' }}>Syncing scheduler logs...</div>;
   }
 
-  // 🩺 DOCTOR DASHBOARD VIEW
+  // 🩺 UPGRADED DOCTOR DASHBOARD VIEW
   if (isDoctor) {
+    const doctorObj = user;
     return (
-      <div className="fade-in">
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '36px', textAlign: 'left', marginBottom: '8px' }}>
-            Doctor Dashboard
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', textAlign: 'left' }}>
-            Manage clinic bookings, configure availability parameters, and update patient statuses
-          </p>
-        </div>
-
-        {/* Stats Grid */}
-        {doctorStats && (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '24px',
-            marginBottom: '32px'
-          }}>
-            <div className="glass-panel" style={{ padding: '20px' }}>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 600 }}>Total Bookings</div>
-              <div style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'var(--font-heading)', marginTop: '8px' }}>{doctorStats.total_consultations}</div>
+      <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        
+        {/* Welcome Hero Section */}
+        <div style={{
+          background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+          borderRadius: 'var(--radius-lg)',
+          padding: '40px',
+          color: '#ffffff',
+          textAlign: 'left',
+          boxShadow: 'var(--shadow-lg)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '24px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <div style={{
+              width: '72px',
+              height: '72px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--brand-secondary)'
+            }}>
+              <Stethoscope size={36} />
             </div>
-            <div className="glass-panel" style={{ padding: '20px' }}>
-              <div style={{ color: 'var(--success)', fontSize: '13px', fontWeight: 600 }}>Confirmed</div>
-              <div style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'var(--font-heading)', marginTop: '8px' }}>{doctorStats.upcoming_appointments}</div>
-            </div>
-            <div className="glass-panel" style={{ padding: '20px' }}>
-              <div style={{ color: 'var(--brand-primary)', fontSize: '13px', fontWeight: 600 }}>Pending</div>
-              <div style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'var(--font-heading)', marginTop: '8px', color: 'var(--brand-primary)' }}>{doctorStats.pending_appointments}</div>
-            </div>
-            <div className="glass-panel" style={{ padding: '20px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontWeight: 600 }}>Unique Patients</div>
-              <div style={{ fontSize: '36px', fontWeight: 700, fontFamily: 'var(--font-heading)', marginTop: '8px' }}>{doctorStats.patient_count}</div>
+            <div>
+              <span className="badge badge-success" style={{ backgroundColor: 'rgba(52, 211, 153, 0.15)', color: 'var(--success)', marginBottom: '8px' }}>
+                Healthcare Provider Portal
+              </span>
+              <h1 style={{ fontSize: '28px', color: '#ffffff', marginBottom: '6px' }}>Dr. {doctorObj?.username || 'Practitioner'}</h1>
+              <div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Stethoscope size={14} /> Medical Practitioner
+                </span>
+                {workLocation && (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <MapPin size={14} /> {workLocation}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        )}
+          
+          <div className="glass-panel" style={{ padding: '16px 24px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+              <Clock size={13} /> Active Schedule
+            </div>
+            <div style={{ fontSize: '14px', fontWeight: 600 }}>
+              {workDays.length > 0 ? workDays.join(', ') : 'No schedule set'}
+            </div>
+          </div>
+        </div>
 
+        {/* Status Alerts */}
         {error && (
-          <div className="badge-error" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '24px' }}>
+          <div className="badge-error" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', borderRadius: 'var(--radius-md)' }}>
             <ShieldAlert size={16} />
             <span>{error}</span>
           </div>
         )}
-
         {success && (
-          <div className="badge-success" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '24px' }}>
+          <div className="badge-success" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', borderRadius: 'var(--radius-md)' }}>
             <Sparkles size={16} />
             <span>{success}</span>
           </div>
         )}
 
+        {/* Statistics KPI Row */}
+        {doctorStats && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '24px'
+          }}>
+            <div className="glass-panel" style={{ padding: '24px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)' }}>Total Bookings</span>
+                <div style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--font-heading)', marginTop: '4px' }}>{doctorStats.total_consultations}</div>
+              </div>
+              <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(99, 102, 241, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary)' }}>
+                <Calendar size={20} />
+              </div>
+            </div>
+
+            <div className="glass-panel" style={{ padding: '24px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--brand-primary)' }}>Pending Approval</span>
+                <div style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--font-heading)', marginTop: '4px', color: 'var(--brand-primary)' }}>{doctorStats.pending_appointments}</div>
+              </div>
+              <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(99, 102, 241, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary)' }}>
+                <Clock size={20} />
+              </div>
+            </div>
+
+            <div className="glass-panel" style={{ padding: '24px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--success)' }}>Upcoming Scheduled</span>
+                <div style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--font-heading)', marginTop: '4px', color: 'var(--success)' }}>{doctorStats.upcoming_appointments}</div>
+              </div>
+              <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--success)' }}>
+                <Check size={20} />
+              </div>
+            </div>
+
+            <div className="glass-panel" style={{ padding: '24px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>Unique Patients</span>
+                <div style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--font-heading)', marginTop: '4px' }}>{doctorStats.patient_count}</div>
+              </div>
+              <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(148, 163, 184, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                <User size={20} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Dashboard Content Split */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '32px',
           alignItems: 'start'
         }}>
-          {/* Appointment list */}
+          {/* Left panel: Consultation Log */}
           <div className="glass-panel" style={{ padding: '32px' }}>
-            <h2 style={{ fontSize: '22px', marginBottom: '20px' }}>Consultation Log</h2>
+            <h2 style={{ fontSize: '22px', marginBottom: '6px' }}>Consultation Schedule</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '24px' }}>Manage patient requests and update consultation status</p>
+            
             {appointments.length === 0 ? (
-              <p style={{ color: 'var(--text-secondary)' }}>No client bookings registered yet.</p>
+              <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-secondary)' }}>No client bookings registered yet.</div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '500px', overflowY: 'auto' }}>
                 {appointments.map((appt) => (
@@ -246,36 +330,55 @@ const AppointmentsPage = () => {
                     borderRadius: 'var(--radius-md)',
                     backgroundColor: 'var(--bg-tertiary)',
                     border: '1px solid var(--border-color)',
-                    textAlign: 'left'
+                    textAlign: 'left',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px'
                   }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                          color: 'var(--brand-primary)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 700,
+                          fontSize: '14px'
+                        }}>
+                          {appt.patient_detail?.username?.[0]?.toUpperCase()}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: '14px' }}>{appt.patient_detail?.username}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{appt.patient_detail?.email}</div>
+                        </div>
+                      </div>
                       <span className="badge" style={{
                         backgroundColor: appt.status === 'Scheduled' ? 'rgba(16, 185, 129, 0.15)' :
-                                         appt.status === 'Pending' ? 'rgba(99, 102, 241, 0.15)' :
-                                         appt.status === 'Completed' ? 'rgba(148, 163, 184, 0.15)' :
+                                         appt.status === 'Pending' ? 'rgba(245, 158, 11, 0.15)' :
+                                         appt.status === 'Completed' ? 'rgba(99, 102, 241, 0.15)' :
                                          'rgba(239, 68, 68, 0.15)',
                         color: appt.status === 'Scheduled' ? 'var(--success)' :
-                               appt.status === 'Pending' ? 'var(--brand-primary)' :
-                               appt.status === 'Completed' ? 'var(--text-secondary)' :
+                               appt.status === 'Pending' ? 'var(--warning)' :
+                               appt.status === 'Completed' ? 'var(--brand-primary)' :
                                'var(--error)'
                       }}>{appt.status}</span>
-                      <div style={{ display: 'flex', gap: '8px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                        <Calendar size={13} style={{ marginTop: '2px' }} />
-                        {appt.appointment_date} @ {appt.appointment_time.substring(0, 5)}
-                      </div>
                     </div>
-                    
-                    <div style={{ fontWeight: 600, fontSize: '15px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <User size={15} color="var(--brand-primary)" />
-                      {appt.patient_detail?.username} ({appt.patient_detail?.email})
+
+                    <div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: 'var(--text-secondary)', padding: '8px 0', borderBlock: '1px solid var(--border-color)' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Calendar size={13} /> {appt.appointment_date}</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={13} /> {appt.appointment_time.substring(0, 5)}</span>
                     </div>
 
                     {appt.status === 'Pending' && (
                       <div style={{ display: 'flex', gap: '8px' }}>
-                        <button onClick={() => handleUpdateStatus(appt.id, 'Scheduled')} className="btn btn-primary" style={{ padding: '6px 12px', fontSize: '13px', flex: 1 }}>
-                          <Check size={14} /> Accept
+                        <button onClick={() => handleUpdateStatus(appt.id, 'Scheduled')} className="btn btn-primary" style={{ padding: '8px', fontSize: '13px', flex: 1, gap: '4px' }}>
+                          <Check size={14} /> Accept Request
                         </button>
-                        <button onClick={() => handleUpdateStatus(appt.id, 'Cancelled')} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', flex: 1 }}>
+                        <button onClick={() => handleUpdateStatus(appt.id, 'Cancelled')} className="btn btn-secondary" style={{ padding: '8px', fontSize: '13px', flex: 1, color: 'var(--error)', gap: '4px' }}>
                           <X size={14} /> Decline
                         </button>
                       </div>
@@ -283,11 +386,11 @@ const AppointmentsPage = () => {
 
                     {appt.status === 'Scheduled' && (
                       <div style={{ display: 'flex', gap: '8px' }}>
-                        <button onClick={() => handleUpdateStatus(appt.id, 'Completed')} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', flex: 1, color: 'var(--success)', borderColor: 'var(--success)' }}>
-                          Mark Completed
+                        <button onClick={() => handleUpdateStatus(appt.id, 'Completed')} className="btn btn-primary" style={{ padding: '8px', fontSize: '13px', flex: 1, backgroundColor: 'var(--success)', border: 'none', gap: '4px' }}>
+                          <Check size={14} /> Complete Visit
                         </button>
-                        <button onClick={() => handleUpdateStatus(appt.id, 'Cancelled')} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', flex: 1, color: 'var(--error)' }}>
-                          Cancel
+                        <button onClick={() => handleUpdateStatus(appt.id, 'Cancelled')} className="btn btn-secondary" style={{ padding: '8px', fontSize: '13px', flex: 1, color: 'var(--error)', gap: '4px' }}>
+                          <X size={14} /> Cancel
                         </button>
                       </div>
                     )}
@@ -297,24 +400,31 @@ const AppointmentsPage = () => {
             )}
           </div>
 
-          {/* Availability settings */}
+          {/* Right panel: Profile Availability Customizer */}
           <div className="glass-panel" style={{ padding: '32px' }}>
-            <h2 style={{ fontSize: '22px', marginBottom: '20px' }}>Clinic Hours & Availability</h2>
+            <h2 style={{ fontSize: '22px', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Sliders size={20} color="var(--brand-primary)" />
+              Practice Settings
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '24px' }}>Configure working hours, location details, and slots</p>
+
             <form onSubmit={handleUpdateAvailability}>
               <div className="form-group">
-                <label className="form-label">Clinic Location / Desk</label>
+                <label className="form-label">Practice Location / Desk</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g. Desk 4, City Heart Clinic"
+                  placeholder="e.g. Room 402, City General Hospital"
                   value={workLocation}
                   onChange={(e) => setWorkLocation(e.target.value)}
+                  required
                 />
               </div>
 
-              <div className="form-group" style={{ marginBottom: '24px' }}>
+              {/* Working days checkboxes */}
+              <div className="form-group">
                 <label className="form-label">Active Working Days</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '6px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginTop: '6px' }}>
                   {DAYS_OF_WEEK.map((day) => {
                     const isSelected = workDays.includes(day);
                     return (
@@ -322,21 +432,21 @@ const AppointmentsPage = () => {
                         type="button"
                         key={day}
                         style={{
-                          padding: '6px 12px',
+                          padding: '10px 8px',
                           fontSize: '13px',
-                          borderRadius: 'var(--radius-sm)',
+                          borderRadius: 'var(--radius-md)',
                           border: `1px solid ${isSelected ? 'var(--brand-primary)' : 'var(--border-color)'}`,
-                          backgroundColor: isSelected ? 'var(--brand-primary)' : 'var(--bg-tertiary)',
-                          color: isSelected ? '#ffffff' : 'var(--text-secondary)',
+                          backgroundColor: isSelected ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
+                          color: isSelected ? 'var(--brand-primary)' : 'var(--text-secondary)',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '4px',
+                          gap: '6px',
                           transition: 'all var(--transition-fast)'
                         }}
                         onClick={() => handleDayToggle(day)}
                       >
-                        {isSelected && <Check size={12} />}
+                        {isSelected ? <CheckSquare size={14} color="var(--brand-primary)" /> : <Square size={14} />}
                         {day}
                       </button>
                     );
@@ -344,8 +454,41 @@ const AppointmentsPage = () => {
                 </div>
               </div>
 
+              {/* Custom working hour slots */}
+              <div className="form-group" style={{ marginBottom: '28px' }}>
+                <label className="form-label">Active Hour Slots</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginTop: '6px' }}>
+                  {DEFAULT_TIME_SLOTS.map((slot) => {
+                    const isSelected = workSlots.includes(slot);
+                    return (
+                      <button
+                        type="button"
+                        key={slot}
+                        style={{
+                          padding: '8px 4px',
+                          fontSize: '12px',
+                          borderRadius: 'var(--radius-md)',
+                          border: `1px solid ${isSelected ? 'var(--brand-primary)' : 'var(--border-color)'}`,
+                          backgroundColor: isSelected ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
+                          color: isSelected ? 'var(--brand-primary)' : 'var(--text-secondary)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px',
+                          transition: 'all var(--transition-fast)'
+                        }}
+                        onClick={() => handleSlotToggle(slot)}
+                      >
+                        {slot}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={updatingAvailability}>
-                {updatingAvailability ? 'Saving settings...' : 'Update Clinic Profile'}
+                {updatingAvailability ? 'Saving practice details...' : 'Save Practice Profile'}
               </button>
             </form>
           </div>

@@ -2,8 +2,8 @@
 __pycache__/
 .env
 db.sqlite3
-migrations
-__init__.py
+**/migrations/__pycache__/
+
 
 # Local Environment Ignored Folders
 newmed/

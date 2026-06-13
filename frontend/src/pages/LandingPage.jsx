@@ -1,337 +1,237 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, Shield, Zap, UserCheck, Smartphone, ChevronLeft, ChevronRight, Rocket, Star, Heart, Truck, HeartHandshake } from 'lucide-react';
-
-const TESTIMONIALS = [
-  {
-    content: "MediTrack's AI skin detection helped me identify a potential issue months before my scheduled dermatologist appointment. Early detection made all the difference!",
-    author: "Sarah Johnson",
-    role: "Patient • 6 months user",
-    avatar: "SJ"
-  },
-  {
-    content: "As someone with multiple medications, the reminder system is a lifesaver. The SMS alerts ensure I never miss a dose. Truly revolutionary!",
-    author: "Michael Rodriguez",
-    role: "Chronic Care Patient",
-    avatar: "MR"
-  },
-  {
-    content: "The appointment booking system saved me hours of phone calls. Being able to see doctor availability and book instantly has transformed my healthcare experience.",
-    author: "Emma Patel",
-    role: "Busy Professional",
-    avatar: "EP"
-  }
-];
+import { ArrowRight, Activity, Calendar, Shield, Thermometer, Clock, Truck, HeartHandshake, Heart, User } from 'lucide-react';
+import heroBg from '../assets/hero_bg.png';
 
 const LandingPage = () => {
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const nextTestimonial = () => {
-    setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
-  };
-
-  const prevTestimonial = () => {
-    setActiveTestimonial((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
-  };
-
   return (
-    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '80px', paddingBottom: '80px' }}>
+    <div className="flex-col gap-0">
       
-      {/* 🚀 Hero Section */}
-      <section style={{
-        padding: '60px 0',
-        textAlign: 'left',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '40px',
-        alignItems: 'center',
-        borderBottom: '1px solid var(--border-color)',
-        paddingBottom: '80px'
-      }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="badge badge-success" style={{ width: 'fit-content', gap: '6px' }}>
-            <Star size={12} fill="currentColor" />
-            <span>AI-Powered Health Companion</span>
+      {/* 🚀 Hero Section (MediTrack Content) */}
+      <section className="hero-wrapper" style={{ backgroundImage: `url(${heroBg})` }}>
+        <div className="hero-content">
+          
+          {/* Floating Badges */}
+          <div style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 10 }}>
+            <span className="glass-pill">
+              <span style={{ color: '#0ea5e9', fontSize: '18px' }}>•</span> AI Skin Diagnosis
+            </span>
           </div>
-          <h1 style={{ fontSize: '48px', lineHeight: 1.15, fontWeight: 800 }}>
-            Your Smart Digital Healthcare Portal
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '18px', lineHeight: 1.5, maxWidth: '540px' }}>
-            Revolutionizing healthcare with intelligent monitoring, deep learning skin diagnosis, and seamless appointment scheduling.
-          </p>
-          <div style={{ display: 'flex', gap: '16px', marginTop: '12px' }}>
-            <Link to="/signup" className="btn btn-primary" style={{ padding: '14px 28px' }}>
-              <Rocket size={18} />
-              Get Started Free
-            </Link>
-            <Link to="/login" className="btn btn-secondary" style={{ padding: '14px 28px' }}>
-              Access Dashboard
+
+          <div style={{ position: 'absolute', top: '25%', right: '25%', zIndex: 10 }}>
+            <span className="glass-pill">
+              <span style={{ color: 'var(--success)', fontSize: '18px' }}>•</span> Live Tracking
+            </span>
+          </div>
+
+          <div style={{ position: 'absolute', top: '50%', right: '10%', zIndex: 10 }}>
+            <span className="glass-pill">
+              <span style={{ color: '#f59e0b', fontSize: '18px' }}>•</span> Equipment Rentals
+            </span>
+          </div>
+
+          <div style={{ position: 'absolute', bottom: '20%', right: '15%', zIndex: 10 }}>
+            <Link to="/appointments" className="glass-pill" style={{ padding: '12px 20px', display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#ff7eb3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Calendar size={12} color="#fff" /></div>
+                <span>Book Appointment</span>
+              </div>
+              <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowRight size={14} />
+              </div>
             </Link>
           </div>
-        </div>
-        
-        {/* Animated illustration frame */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-        }}>
-          <div className="glass-panel" style={{
-            width: '100%',
-            maxWidth: '440px',
-            padding: '40px',
-            textAlign: 'center',
-            background: 'linear-gradient(135deg, var(--glass-bg), rgba(99, 102, 241, 0.05))',
-            position: 'relative'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-15px',
-              right: '-15px',
-              backgroundColor: 'var(--success)',
-              color: 'white',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: 'var(--shadow-md)'
-            }}>
-              <Heart size={20} fill="currentColor" />
-            </div>
-            <Activity size={96} strokeWidth={1} color="var(--brand-primary)" style={{ marginBottom: '20px' }} />
-            <h3 style={{ fontSize: '24px', marginBottom: '8px' }}>Live Health Tracking</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-              Instant diagnostic scores and real-time alerts.
+
+          {/* Main Text Area */}
+          <div style={{ maxWidth: '600px', marginTop: '10vh' }}>
+            <p style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 600 }}>
+              AI-POWERED HEALTH COMPANION
             </p>
+            <h1 style={{ fontSize: '72px', fontWeight: 600, color: '#ffffff', letterSpacing: '-0.03em', lineHeight: 1.05, textShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+              Your Smart <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', verticalAlign: 'middle', margin: '0 8px' }}>*</span><br />
+              Digital Health<br />
+              Portal
+            </h1>
+            
+            <div className="flex-center" style={{ justifyContent: 'flex-start', gap: '24px', marginTop: '40px' }}>
+              <Link to="/signup" className="glass-pill" style={{ padding: '12px 24px', cursor: 'pointer' }}>
+                Get Started Free <ArrowRight size={16} style={{ marginLeft: '8px' }} />
+              </Link>
+              
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Heart size={18} color="#fff" /></div>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Activity size={18} color="#fff" /></div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 📊 Stats Counter */}
-      <section style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '24px',
-        textAlign: 'center'
-      }}>
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--brand-primary)' }}>10,000+</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Active Patients</div>
+      {/* 🌍 Why Trust MediTrack Section */}
+      <section className="container section-padding">
+        <div className="grid-cols-2" style={{ alignItems: 'flex-start', marginBottom: '80px' }}>
+          <h2 style={{ fontSize: '64px', fontWeight: 600, letterSpacing: '-0.04em', lineHeight: 1 }}>
+            Why Trust<br/>MediTrack?
+          </h2>
+          <div style={{ paddingTop: '12px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '18px', maxWidth: '400px' }}>
+              Revolutionizing healthcare with intelligent monitoring, deep learning skin diagnosis, and seamless appointment scheduling.
+            </p>
+          </div>
         </div>
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--brand-secondary)' }}>5,000+</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Diagnoses Made</div>
-        </div>
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--success)' }}>98%</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>Inference Accuracy</div>
-        </div>
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--text-primary)' }}>24/7</div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '6px', fontWeight: 600 }}>System Availability</div>
+
+        <div className="grid-cols-2" style={{ gap: '60px' }}>
+          <div>
+            <div style={{ fontSize: '48px', color: 'var(--border-color)', lineHeight: 1, marginBottom: '16px', fontFamily: 'serif' }}>"</div>
+            <p style={{ fontSize: '24px', fontWeight: 500, lineHeight: 1.4, color: 'var(--text-primary)', marginBottom: '32px' }}>
+              Empower yourself with intelligent features designed to make healthcare management simple, fast, and secure. All logs are encrypted with enterprise-grade protection.
+            </p>
+            <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'none', border: 'none', fontWeight: 600, fontSize: '16px', cursor: 'pointer', color: 'var(--text-primary)' }}>
+              Access Dashboard
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--brand-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowRight size={16} style={{ transform: 'rotate(-45deg)' }} />
+              </div>
+            </Link>
+          </div>
+          
+          <div style={{ position: 'relative' }}>
+             <div className="card" style={{ padding: '60px', textAlign: 'center', background: '#ffffff', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+               <Shield size={48} color="var(--brand-primary)" style={{ marginBottom: '24px' }} />
+               <h3 style={{ fontSize: '24px', fontWeight: 600, marginBottom: '12px' }}>Secure & Instant Health Results</h3>
+               <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: '40px', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                 <span>Security</span>
+                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>Explore <ArrowRight size={14} /></span>
+               </div>
+             </div>
+          </div>
         </div>
       </section>
 
       {/* ⚡ Features Grid */}
-      <section id="features" style={{ textAlign: 'center' }}>
-        <h2 style={{ fontSize: '32px', marginBottom: '16px' }}>Smart Health Features</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '48px', maxWidth: '600px', marginInline: 'auto' }}>
-          Empower yourself with intelligent features designed to make healthcare management simple, fast, and secure.
-        </p>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '24px'
-        }}>
-          <Link to="/diagnosis" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
-            <div>
-              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>AI Skin Diagnosis</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-                Upload clinical pictures of skin irritations for instant, lightweight deep learning classification.
-              </p>
-            </div>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
-              Check Now →
-            </span>
-          </Link>
-          
-          <Link to="/appointments" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
-            <div>
-              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Smart Scheduling</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-                Select clinic slots, browse verified practitioners, and submit pending appointment requests instantly.
-              </p>
-            </div>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
-              Check Now →
-            </span>
-          </Link>
-
-          <Link to="/health" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
-            <div>
-              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Health Monitoring</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-                Log health details to compute current BMI/BMR statistics and maintain history charts over time.
-              </p>
-            </div>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
-              Check Now →
-            </span>
-          </Link>
-
-          <Link to="/reminders" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
-            <div>
-              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Medication Reminders</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-                Configure automatic medication notifications delivered directly via Twilio SMS and email logs.
-              </p>
-            </div>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
-              Check Now →
-            </span>
-          </Link>
-
-          <Link to="/rentals" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
-            <div>
-              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Equipment Rentals</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-                Rent essential medical equipment like wheelchairs, oxygen cylinders, and beds from verified local coordinators.
-              </p>
-            </div>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
-              Check Now →
-            </span>
-          </Link>
-
-          <Link to="/ngos" className="glass-panel glass-panel-interactive" style={{ padding: '32px', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: 'inherit' }}>
-            <div>
-              <h3 style={{ fontSize: '20px', marginBottom: '12px' }}>Medical Resources</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>
-                Connect with verified health NGOs offering free check-ups, diagnostic camps, and financial assistance.
-              </p>
-            </div>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--brand-primary)', fontWeight: 600, fontSize: '14px', marginTop: '16px' }}>
-              Check Now →
-            </span>
-          </Link>
-        </div>
-      </section>
-
-      {/* 🛡️ Benefits Section */}
-      <section id="why-trust" style={{ textAlign: 'center' }}>
-        <h2 style={{ fontSize: '32px', marginBottom: '40px' }}>Why Trust MediTrack?</h2>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '24px'
-        }}>
-          <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-            <Shield size={40} color="var(--brand-primary)" />
-            <h4 style={{ fontSize: '18px' }}>Secure Data</h4>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>All logs are encrypted with enterprise-grade protection.</p>
-          </div>
-          <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-            <Zap size={40} color="var(--brand-secondary)" />
-            <h4 style={{ fontSize: '18px' }}>Instant Results</h4>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Access calculations and diagnostics in seconds.</p>
-          </div>
-          <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-            <UserCheck size={40} color="var(--success)" />
-            <h4 style={{ fontSize: '18px' }}>Verified Schedules</h4>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Direct confirmation and emails with qualified practitioners.</p>
-          </div>
-          <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-            <Smartphone size={40} color="var(--text-primary)" />
-            <h4 style={{ fontSize: '18px' }}>Responsive Design</h4>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Cross-platform dashboard compatible across devices.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 💬 Testimonials */}
-      <section id="testimonials" className="glass-panel" style={{ padding: '48px 32px', position: 'relative', overflow: 'hidden' }}>
-        <h2 style={{ fontSize: '28px', marginBottom: '32px', textAlign: 'center' }}>What Our Users Say</h2>
+      <section className="container mb-8">
+        <h2 style={{ fontSize: '36px', marginBottom: '40px', textAlign: 'center' }}>Smart Health Features</h2>
         
-        <div style={{ minHeight: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <p style={{
-            fontSize: '18px',
-            fontStyle: 'italic',
-            lineHeight: 1.6,
-            color: 'var(--text-primary)',
-            marginBottom: '24px',
-            maxWidth: '800px',
-            marginInline: 'auto'
-          }}>
-            "{TESTIMONIALS[activeTestimonial].content}"
-          </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
           
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-            <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: 'var(--brand-primary)',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 600
-            }}>
-              {TESTIMONIALS[activeTestimonial].avatar}
+          {/* Diagnosis */}
+          <Link to="/diagnosis" className="card card-interactive" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '40px', background: '#e2e8f0', minHeight: '320px', textDecoration: 'none' }}>
+            <div className="flex-between">
+              <span className="badge badge-light">AI</span>
+              <Thermometer size={24} color="var(--text-secondary)" />
             </div>
-            <div style={{ textAlign: 'left' }}>
-              <h5 style={{ fontSize: '15px', fontWeight: 600 }}>{TESTIMONIALS[activeTestimonial].author}</h5>
-              <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{TESTIMONIALS[activeTestimonial].role}</p>
+            <div style={{ marginTop: 'auto' }}>
+              <h3 style={{ fontSize: '32px', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '8px' }}>Skin Diagnosis</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Upload clinical pictures for instant deep learning classification.</p>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '24px', lineHeight: 1, color: 'var(--text-primary)' }}>+</span>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </Link>
 
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '16px',
-          marginTop: '32px'
-        }}>
-          <button onClick={prevTestimonial} className="btn btn-secondary" style={{ padding: '8px', borderRadius: '50%' }}>
-            <ChevronLeft size={16} />
-          </button>
-          <button onClick={nextTestimonial} className="btn btn-secondary" style={{ padding: '8px', borderRadius: '50%' }}>
-            <ChevronRight size={16} />
-          </button>
+          {/* Appointments */}
+          <Link to="/appointments" className="card card-interactive" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '40px', background: 'var(--brand-secondary-light)', minHeight: '320px', textDecoration: 'none' }}>
+            <div className="flex-between">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <User size={24} color="var(--brand-secondary)" />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Doctors</div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Verified practitioners</div>
+                </div>
+              </div>
+              <span className="glass-pill" style={{ fontSize: '12px' }}>Schedule +</span>
+            </div>
+            
+            <div style={{ marginTop: 'auto' }}>
+              <h3 style={{ fontSize: '32px', fontWeight: 500, color: 'var(--brand-primary)', marginBottom: '16px', lineHeight: 1.2 }}>Smart Scheduling</h3>
+              <p style={{ fontSize: '15px', color: 'var(--text-secondary)' }}>Select slots and book pending requests instantly.</p>
+            </div>
+          </Link>
+
+          {/* Health Tracking */}
+          <Link to="/health" className="card card-interactive" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '40px', background: 'var(--success-light)', minHeight: '320px', textDecoration: 'none' }}>
+            <div className="flex-between">
+              <span className="badge badge-light">Monitoring</span>
+              <Activity size={24} color="var(--success)" />
+            </div>
+            <div style={{ marginTop: 'auto' }}>
+              <h3 style={{ fontSize: '32px', fontWeight: 500, color: 'var(--success)', marginBottom: '8px' }}>Health Tracking</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Log health details to compute current BMI/BMR statistics.</p>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '24px', lineHeight: 1, color: 'var(--success)' }}>+</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Reminders */}
+          <Link to="/reminders" className="card card-interactive" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '40px', background: 'var(--brand-primary-light)', minHeight: '320px', textDecoration: 'none' }}>
+            <div className="flex-between">
+              <span className="badge badge-light">Alerts</span>
+              <Clock size={24} color="var(--brand-primary)" />
+            </div>
+            <div style={{ marginTop: 'auto' }}>
+              <h3 style={{ fontSize: '32px', fontWeight: 500, color: 'var(--brand-primary)', marginBottom: '8px' }}>Medication Reminders</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Configure automatic SMS notifications for prescriptions.</p>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '24px', lineHeight: 1, color: 'var(--brand-primary)' }}>+</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+          
+          {/* Rentals */}
+          <Link to="/rentals" className="card card-interactive" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '40px', background: '#fef3c7', minHeight: '320px', textDecoration: 'none' }}>
+            <div className="flex-between">
+              <span className="badge badge-light">Equipment</span>
+              <Truck size={24} color="#d97706" />
+            </div>
+            <div style={{ marginTop: 'auto' }}>
+              <h3 style={{ fontSize: '32px', fontWeight: 500, color: '#d97706', marginBottom: '8px' }}>Medical Rentals</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Rent essential items like wheelchairs and oxygen cylinders.</p>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '24px', lineHeight: 1, color: '#d97706' }}>+</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* NGOs */}
+          <Link to="/ngos" className="card card-interactive" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '40px', background: '#fee2e2', minHeight: '320px', textDecoration: 'none' }}>
+            <div className="flex-between">
+              <span className="badge badge-light">Support</span>
+              <HeartHandshake size={24} color="#dc2626" />
+            </div>
+            <div style={{ marginTop: 'auto' }}>
+              <h3 style={{ fontSize: '32px', fontWeight: 500, color: '#dc2626', marginBottom: '8px' }}>Medical Resources</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Connect with health NGOs for check-ups and assistance.</p>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '24px', lineHeight: 1, color: '#dc2626' }}>+</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+
         </div>
       </section>
 
-      {/* 📢 Bottom CTA */}
-      <section className="glass-panel" style={{
-        padding: '60px 40px',
-        textAlign: 'center',
-        background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary-hover))',
-        color: '#ffffff',
-        border: 'none'
-      }}>
-        <h2 style={{ fontSize: '32px', marginBottom: '16px', color: '#ffffff' }}>Ready to Take Control of Your Health?</h2>
-        <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: '32px', maxWidth: '600px', marginInline: 'auto' }}>
-          Join thousands of users who trust MediTrack for their daily health monitoring and medical coordination.
-        </p>
-        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-          <Link to="/signup" className="btn btn-secondary" style={{ padding: '12px 24px', backgroundColor: '#ffffff', color: 'var(--brand-primary)', border: 'none' }}>
-            Create Free Account
-          </Link>
-          <Link to="/login" className="btn" style={{ padding: '12px 24px', border: '1px solid rgba(255,255,255,0.4)', color: '#ffffff' }}>
-            Log In
-          </Link>
+      {/* Footer */}
+      <footer className="container" style={{ padding: '60px 24px', borderTop: '1px solid var(--border-color)', marginTop: '40px', textAlign: 'center' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>&copy; {new Date().getFullYear()} MediTrack. All rights reserved.</p>
+        <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', marginTop: '16px' }}>
+          <a href="#" style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Privacy Policy</a>
+          <a href="#" style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Terms of Service</a>
+          <a href="#" style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Contact Us</a>
         </div>
-      </section>
-      
+      </footer>
+
     </div>
   );
 };

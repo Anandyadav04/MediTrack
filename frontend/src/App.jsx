@@ -11,253 +11,143 @@ import RemindersPage from './pages/RemindersPage';
 import LandingPage from './pages/LandingPage';
 import RentalsPage from './pages/RentalsPage';
 import NgosPage from './pages/NgosPage';
-import { Activity, LogOut, ShieldAlert, Calendar, Clock, Heart, Thermometer, User, Truck, HeartHandshake, ChevronDown } from 'lucide-react';
+import { Activity, LogOut, Calendar, Clock, Heart, Thermometer, User, Truck, HeartHandshake, Menu, ArrowRight } from 'lucide-react';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading application...</div>;
+  if (loading) return <div className="text-center mt-8">Loading application...</div>;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return children;
 };
 
-// Temp pages (to be replaced in subsequent phases)
+// Simplified HomePage
 const HomePage = () => {
   const { user } = useAuth();
   const [upcoming, setUpcoming] = useState(null);
+  const [pending, setPending] = useState(null);
+  const [latestHealth, setLatestHealth] = useState(null);
 
   useEffect(() => {
-    const fetchUpcoming = async () => {
+    const fetchData = async () => {
       try {
-        const res = await client.get('appointments/bookings/');
-        const booked = res.data.find(a => a.status === 'Scheduled' && a.is_upcoming);
+        const apptRes = await client.get('appointments/bookings/');
+        const booked = apptRes.data.find(a => a.status === 'Scheduled' && a.is_upcoming);
+        const pendingAppt = apptRes.data.find(a => a.status === 'Pending');
         setUpcoming(booked || null);
+        setPending(pendingAppt || null);
       } catch (err) {
-        console.error('Failed to load upcoming appt');
+        console.error('Failed to load appointments');
+      }
+
+      try {
+        const healthRes = await client.get('health/');
+        if (healthRes.data && healthRes.data.length > 0) {
+          setLatestHealth(healthRes.data[0]);
+        }
+      } catch (err) {
+        console.error('Failed to load health logs');
       }
     };
-    fetchUpcoming();
+    fetchData();
   }, []);
 
   return (
-    <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      {/* Welcome Banner */}
-      <div style={{
-        background: 'linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '40px',
-        color: '#ffffff',
-        textAlign: 'left',
-        boxShadow: 'var(--shadow-lg)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '24px'
-      }}>
-        <div>
-          <span className="badge" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', marginBottom: '8px' }}>
-            Patient Portal Dashboard
-          </span>
-          <h1 style={{ fontSize: '32px', color: '#ffffff', marginBottom: '6px' }}>
-            Welcome back, {user?.username || 'User'} 👋
-          </h1>
-          <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '15px' }}>
-            Access all your healthcare monitoring, scheduling and prescription logs.
-          </p>
-        </div>
-        
-        {upcoming && (
-          <div className="glass-panel" style={{ 
-            padding: '16px 24px', 
-            textAlign: 'left', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '16px', 
-            borderLeft: '4px solid var(--success)', 
-            maxWidth: '380px',
-            backgroundColor: 'rgba(255, 255, 255, 0.08)',
-            borderColor: 'rgba(255, 255, 255, 0.15)'
-          }}>
-            <Calendar size={32} color="var(--success)" />
-            <div>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(255, 255, 255, 0.7)', textTransform: 'uppercase' }}>Next Appointment</div>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }}>Dr. {upcoming.doctor_detail?.name}</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)' }}>
-                {upcoming.appointment_date} @ {upcoming.appointment_time.substring(0, 5)}
-              </div>
-            </div>
-          </div>
-        )}
+    <div className="container" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
+      
+      {/* Dashboard Header */}
+      <div style={{ marginBottom: '40px' }}>
+        <h1 style={{ fontSize: '42px', fontWeight: 600, letterSpacing: '-0.04em', color: 'var(--text-primary)' }}>
+          Welcome back, {user?.username || 'User'}
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '18px', marginTop: '8px' }}>
+          Here is your personalized healthcare overview for today.
+        </p>
       </div>
 
-      {/* Quick Tools Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-        gap: '24px'
-      }}>
-        {/* Skin Diagnosis card */}
-        <Link to="/diagnosis" className="glass-panel" style={{
-          padding: '24px',
-          textAlign: 'left',
-          display: 'block',
-          color: 'inherit',
-          transition: 'all var(--transition-fast)'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(99, 102, 241, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '16px',
-            color: 'var(--brand-primary)'
-          }}>
-            <Thermometer size={24} />
+      <div className="flex-col gap-8">
+        
+        {/* Status Cards Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+          
+          {/* Appointments Card */}
+          <div className="card" style={{ padding: '32px', background: 'var(--brand-primary-light)', display: 'flex', flexDirection: 'column' }}>
+            <span className="badge badge-light" style={{ background: '#fff', color: 'var(--brand-primary)', width: 'fit-content', marginBottom: '16px' }}>Appointments</span>
+            <h2 style={{ fontSize: '24px', color: 'var(--brand-primary)', marginBottom: '8px' }}>
+              {upcoming ? 'Upcoming Appointment' : (pending ? 'Appointment Pending' : 'No Active Appointments')}
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: '24px', flex: 1 }}>
+              {upcoming 
+                ? `Dr. ${upcoming.doctor_name} at ${new Date(upcoming.appointment_date).toLocaleString()}`
+                : (pending ? `Waiting for approval from Dr. ${pending.doctor_name}` : 'You have no pending or scheduled appointments at this time.')}
+            </p>
+            <Link to="/appointments" className="glass-pill" style={{ background: '#fff', color: 'var(--brand-primary)', alignSelf: 'flex-start', textDecoration: 'none' }}>
+              {upcoming || pending ? 'View Details' : 'Book Appointment'} <ArrowRight size={16} style={{ marginLeft: '8px' }} />
+            </Link>
           </div>
-          <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>AI Skin Diagnosis</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
-            Upload skin scans and leverage deep learning models for classification.
-          </p>
-        </Link>
 
-        {/* Health Tracker card */}
-        <Link to="/health" className="glass-panel" style={{
-          padding: '24px',
-          textAlign: 'left',
-          display: 'block',
-          color: 'inherit',
-          transition: 'all var(--transition-fast)'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(52, 211, 153, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '16px',
-            color: 'var(--success)'
-          }}>
-            <Heart size={24} />
+          {/* Health Profile Card */}
+          <div className="card" style={{ padding: '32px', background: 'var(--success-light)', display: 'flex', flexDirection: 'column' }}>
+            <span className="badge badge-light" style={{ background: '#fff', color: 'var(--success)', width: 'fit-content', marginBottom: '16px' }}>Health Profile</span>
+            <h2 style={{ fontSize: '24px', color: 'var(--success)', marginBottom: '8px' }}>
+              {latestHealth ? 'Recent Metrics' : 'No Health Logs'}
+            </h2>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: '24px', flex: 1 }}>
+              {latestHealth ? (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div><strong>BMI:</strong> {latestHealth.bmi}</div>
+                  <div><strong>BMR:</strong> {latestHealth.bmr}</div>
+                  <div><strong>Weight:</strong> {latestHealth.weight} kg</div>
+                  <div><strong>Height:</strong> {latestHealth.height} cm</div>
+                </div>
+              ) : (
+                'Start tracking your vitals to receive personalized wellness insights.'
+              )}
+            </div>
+            <Link to="/health" className="glass-pill" style={{ background: '#fff', color: 'var(--success)', alignSelf: 'flex-start', textDecoration: 'none' }}>
+              {latestHealth ? 'Log New Data' : 'Start Tracking'} <ArrowRight size={16} style={{ marginLeft: '8px' }} />
+            </Link>
           </div>
-          <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Health Monitoring</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
-            Calculate instantly and keep logs of your weight, height, BMR, and BMI metrics.
-          </p>
-        </Link>
 
-        {/* Appointments card */}
-        <Link to="/appointments" className="glass-panel" style={{
-          padding: '24px',
-          textAlign: 'left',
-          display: 'block',
-          color: 'inherit',
-          transition: 'all var(--transition-fast)'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(14, 165, 233, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '16px',
-            color: 'var(--brand-secondary)'
-          }}>
-            <Calendar size={24} />
-          </div>
-          <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Book Appointment</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
-            Browse available doctors, check schedules, and reserve appointment slots.
-          </p>
-        </Link>
+        </div>
 
-        {/* Reminders card */}
-        <Link to="/reminders" className="glass-panel" style={{
-          padding: '24px',
-          textAlign: 'left',
-          display: 'block',
-          color: 'inherit',
-          transition: 'all var(--transition-fast)'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(245, 158, 11, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '16px',
-            color: 'var(--warning)'
-          }}>
-            <Clock size={24} />
-          </div>
-          <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Reminders</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
-            Schedule medication SMS/Email alerts via Celery task execution queues.
-          </p>
-        </Link>
+        {/* Dashboard Grid */}
+        <h3 style={{ fontSize: '24px', fontWeight: 600, marginTop: '16px', color: 'var(--text-primary)' }}>Quick Actions</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+          
+          <Link to="/diagnosis" className="card card-interactive" style={{ padding: '32px', background: '#e2e8f0', textDecoration: 'none', display: 'flex', flexDirection: 'column', minHeight: '220px' }}>
+            <div className="flex-between mb-4">
+              <span className="badge badge-light">AI</span>
+              <Thermometer size={24} color="var(--text-secondary)" />
+            </div>
+            <h3 style={{ fontSize: '24px', fontWeight: 500, color: 'var(--text-primary)', marginTop: 'auto' }}>Skin Diagnosis</h3>
+          </Link>
 
-        {/* Equipment Rentals card */}
-        <Link to="/rentals" className="glass-panel" style={{
-          padding: '24px',
-          textAlign: 'left',
-          display: 'block',
-          color: 'inherit',
-          transition: 'all var(--transition-fast)'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(14, 165, 233, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '16px',
-            color: 'var(--brand-secondary)'
-          }}>
-            <Truck size={24} />
-          </div>
-          <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Equipment Rentals</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
-            Rent medical devices, wheelchairs, oxygen cylinders, and healthcare equipment.
-          </p>
-        </Link>
+          <Link to="/health" className="card card-interactive" style={{ padding: '32px', background: 'var(--success-light)', textDecoration: 'none', display: 'flex', flexDirection: 'column', minHeight: '220px' }}>
+            <div className="flex-between mb-4">
+              <span className="badge badge-light">Monitoring</span>
+              <Heart size={24} color="var(--success)" />
+            </div>
+            <h3 style={{ fontSize: '24px', fontWeight: 500, color: 'var(--success)', marginTop: 'auto' }}>Health Tracking</h3>
+          </Link>
 
-        {/* Medical Resources card */}
-        <Link to="/ngos" className="glass-panel" style={{
-          padding: '24px',
-          textAlign: 'left',
-          display: 'block',
-          color: 'inherit',
-          transition: 'all var(--transition-fast)'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(16, 185, 129, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '16px',
-            color: 'var(--success)'
-          }}>
-            <HeartHandshake size={24} />
-          </div>
-          <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>Medical Resources</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: '1.4' }}>
-            Connect with verified health NGOs offering free check-ups, camps, and assistance.
-          </p>
-        </Link>
+          <Link to="/appointments" className="card card-interactive" style={{ padding: '32px', background: 'var(--brand-secondary-light)', textDecoration: 'none', display: 'flex', flexDirection: 'column', minHeight: '220px' }}>
+            <div className="flex-between mb-4">
+              <span className="badge badge-light">Schedule</span>
+              <Calendar size={24} color="var(--brand-secondary)" />
+            </div>
+            <h3 style={{ fontSize: '24px', fontWeight: 500, color: 'var(--brand-primary)', marginTop: 'auto' }}>Appointments</h3>
+          </Link>
+
+          <Link to="/reminders" className="card card-interactive" style={{ padding: '32px', background: 'var(--brand-primary-light)', textDecoration: 'none', display: 'flex', flexDirection: 'column', minHeight: '220px' }}>
+            <div className="flex-between mb-4">
+              <span className="badge badge-light">Alerts</span>
+              <Clock size={24} color="var(--brand-primary)" />
+            </div>
+            <h3 style={{ fontSize: '24px', fontWeight: 500, color: 'var(--brand-primary)', marginTop: 'auto' }}>Reminders</h3>
+          </Link>
+          
+        </div>
       </div>
     </div>
   );
@@ -266,152 +156,63 @@ const HomePage = () => {
 const Navigation = () => {
   const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = React.useRef(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+    setMobileMenuOpen(false);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const closeMenus = () => setMobileMenuOpen(false);
 
   return (
-    <nav className="navbar glass-panel" style={{ position: 'relative', zIndex: 1000 }}>
-      <Link to="/" className="nav-brand" onClick={() => setDropdownOpen(false)}>
-        <Activity size={28} color="var(--brand-primary)" />
-        <span>MediTrack</span>
-      </Link>
-      
-      {isAuthenticated ? (
-        <ul className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '24px', listStyle: 'none' }}>
-          <li>
-            <Link to="/" className="nav-item" onClick={() => setDropdownOpen(false)}>
-              Dashboard
-            </Link>
-          </li>
+    <nav className="top-nav">
+      <div className="container flex-between">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <Menu size={20} color="var(--text-primary)" />
+          </button>
           
-          {!user?.is_doctor && (
-            <>
-              <li>
-                <Link to="/appointments" className="nav-item" onClick={() => setDropdownOpen(false)}>
-                  Appointments
-                </Link>
-              </li>
-              
-              {/* Services Dropdown */}
-              <li ref={dropdownRef} style={{ position: 'relative' }}>
-                <button 
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="nav-item"
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontFamily: 'inherit',
-                    fontSize: 'inherit',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '8px 12px',
-                    borderRadius: 'var(--radius-sm)',
-                    transition: 'all var(--transition-fast)',
-                    color: dropdownOpen ? 'var(--brand-primary)' : 'var(--text-secondary)'
-                  }}
-                >
-                  Services <ChevronDown size={14} style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-                </button>
-                
-                {dropdownOpen && (
-                  <div className="glass-panel fade-in" style={{
-                    position: 'absolute',
-                    top: '100%',
-                    right: 0,
-                    marginTop: '8px',
-                    width: '200px',
-                    padding: '8px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '4px',
-                    boxShadow: 'var(--shadow-lg)',
-                    zIndex: 1010,
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--bg-secondary)'
-                  }}>
-                    <Link to="/diagnosis" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      🧠 Skin Diagnosis
-                    </Link>
-                    <Link to="/health" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      📊 Health Tracker
-                    </Link>
-                    <Link to="/reminders" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      ⏰ Reminders
-                    </Link>
-                    <Link to="/rentals" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      📦 Rentals
-                    </Link>
-                    <Link to="/ngos" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
-                      🤝 NGOs
-                    </Link>
-                  </div>
-                )}
-              </li>
-            </>
-          )}
-          
-          <li style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: '12px' }}>
-            <span style={{ fontSize: '14px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <User size={16} />
-              {user?.is_doctor ? `Dr. ${user?.username}` : user?.username}
-            </span>
-            <button onClick={handleLogout} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '14px' }}>
-              <LogOut size={14} />
-              Logout
-            </button>
-          </li>
-        </ul>
-      ) : (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-          <ul className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '24px', listStyle: 'none' }}>
-            <li>
-              <a href="/#features" className="nav-item">Features</a>
-            </li>
-            <li>
-              <a href="/#why-trust" className="nav-item">Why Us</a>
-            </li>
-            <li>
-              <a href="/#testimonials" className="nav-item">Testimonials</a>
-            </li>
-          </ul>
-          
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <Link to="/login" className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '14px' }}>
-              Sign In
-            </Link>
-            <Link to="/signup" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '14px' }}>
-              Register
-            </Link>
-          </div>
+          <Link to="/" className="nav-brand" onClick={closeMenus}>
+            <Activity size={24} color="var(--brand-primary)" />
+            <span className="hidden-mobile">MediTrack</span>
+          </Link>
         </div>
-      )}
+
+        <ul className={`nav-menu ${mobileMenuOpen ? 'open' : ''}`}>
+           {isAuthenticated ? (
+             <>
+               <li><Link to="/" className="nav-item" onClick={closeMenus}>Dashboard</Link></li>
+               {!user?.is_doctor && <li><Link to="/appointments" className="nav-item" onClick={closeMenus}>Appointments</Link></li>}
+               <li>
+                 <button onClick={handleLogout} className="btn btn-primary" style={{ padding: '8px 24px', fontSize: '14px' }}>
+                   Logout <LogOut size={14} style={{ marginLeft: '4px' }} />
+                 </button>
+               </li>
+             </>
+           ) : (
+             <>
+               <li><a href="/#features" className="nav-item" onClick={closeMenus}>Features</a></li>
+               <li><a href="/#why-trust" className="nav-item" onClick={closeMenus}>Why Us</a></li>
+               <li>
+                 <Link to="/signup" className="btn btn-primary" onClick={closeMenus} style={{ padding: '8px 24px', fontSize: '14px' }}>
+                   Get Started <span style={{ marginLeft: '4px', fontSize: '16px' }}>→</span>
+                 </Link>
+               </li>
+             </>
+           )}
+        </ul>
+      </div>
     </nav>
   );
 };
 
 const HomeWrapper = () => {
   const { isAuthenticated, user, loading } = useAuth();
-  if (loading) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading application...</div>;
+  if (loading) return <div className="text-center mt-8">Loading application...</div>;
   if (!isAuthenticated) return <LandingPage />;
-  if (user?.is_doctor) return <AppointmentsPage />;
+  if (user?.is_doctor) return <div className="container" style={{paddingTop: '120px'}}><AppointmentsPage /></div>;
   return <HomePage />;
 };
 
@@ -419,52 +220,21 @@ const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <div className="container">
+        <div style={{ position: 'relative' }}>
           <Navigation />
-          
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<div className="container" style={{paddingTop: '120px'}}><LoginPage /></div>} />
+            <Route path="/signup" element={<div className="container" style={{paddingTop: '120px'}}><SignupPage /></div>} />
             
             <Route path="/" element={<HomeWrapper />} />
             
-            <Route path="/diagnosis" element={
-              <ProtectedRoute>
-                <SkinDiagnosisPage />
-              </ProtectedRoute>
-            } />
+            <Route path="/diagnosis" element={<ProtectedRoute><div className="container" style={{paddingTop: '120px'}}><SkinDiagnosisPage /></div></ProtectedRoute>} />
+            <Route path="/health" element={<ProtectedRoute><div className="container" style={{paddingTop: '120px'}}><HealthTrackerPage /></div></ProtectedRoute>} />
+            <Route path="/appointments" element={<ProtectedRoute><div className="container" style={{paddingTop: '120px'}}><AppointmentsPage /></div></ProtectedRoute>} />
+            <Route path="/reminders" element={<ProtectedRoute><div className="container" style={{paddingTop: '120px'}}><RemindersPage /></div></ProtectedRoute>} />
+            <Route path="/rentals" element={<ProtectedRoute><div className="container" style={{paddingTop: '120px'}}><RentalsPage /></div></ProtectedRoute>} />
+            <Route path="/ngos" element={<ProtectedRoute><div className="container" style={{paddingTop: '120px'}}><NgosPage /></div></ProtectedRoute>} />
 
-            <Route path="/health" element={
-              <ProtectedRoute>
-                <HealthTrackerPage />
-              </ProtectedRoute>
-            } />
-
-            <Route path="/appointments" element={
-              <ProtectedRoute>
-                <AppointmentsPage />
-              </ProtectedRoute>
-            } />
-
-            <Route path="/reminders" element={
-              <ProtectedRoute>
-                <RemindersPage />
-              </ProtectedRoute>
-            } />
-
-            <Route path="/rentals" element={
-              <ProtectedRoute>
-                <RentalsPage />
-              </ProtectedRoute>
-            } />
-
-            <Route path="/ngos" element={
-              <ProtectedRoute>
-                <NgosPage />
-              </ProtectedRoute>
-            } />
-
-            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

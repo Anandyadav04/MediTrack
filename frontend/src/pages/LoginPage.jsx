@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Activity, LogIn, AlertCircle } from 'lucide-react';
+import heroBg from '../assets/hero_bg.png';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -31,94 +32,85 @@ const LoginPage = () => {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '80vh',
-      padding: '24px'
-    }}>
-      <div className="glass-panel fade-in" style={{
-        width: '100%',
-        maxWidth: '440px',
-        padding: '40px',
-        textAlign: 'center'
-      }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
-          <Activity size={32} color="var(--brand-primary)" />
-          <span style={{ fontSize: '24px', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
-            MediTrack
-          </span>
-        </div>
+    <div className="auth-layout">
+      {/* Left side: Image */}
+      <div className="auth-image" style={{ backgroundImage: `url(${heroBg})` }}></div>
 
-        <h2 style={{ marginBottom: '8px', fontSize: '28px' }}>Welcome Back</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '15px' }}>
-          Access your personalized healthcare dashboard
-        </p>
-
-        {error && (
-          <div className="badge-error" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '12px 16px',
-            borderRadius: 'var(--radius-md)',
-            marginBottom: '24px',
-            fontSize: '14px',
-            textAlign: 'left'
-          }}>
-            <AlertCircle size={18} style={{ flexShrink: 0 }} />
-            <span>{error}</span>
+      {/* Right side: Form */}
+      <div className="auth-form-container">
+        <div className="auth-form-wrapper fade-in card" style={{ padding: '60px 40px', background: '#ffffff', boxShadow: 'var(--shadow-xl)' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--brand-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Activity size={24} color="var(--brand-primary)" />
+            </div>
+            <span style={{ fontSize: '28px', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+              MediTrack
+            </span>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Username</label>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+          <h2 style={{ marginBottom: '8px', fontSize: '32px', fontWeight: 700, letterSpacing: '-0.03em' }}>Welcome Back</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '40px', fontSize: '16px' }}>
+            Enter your credentials to access your account.
+          </p>
+
+          {error && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px', padding: '16px',
+              borderRadius: 'var(--radius-md)', marginBottom: '24px', fontSize: '14px',
+              background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5'
+            }}>
+              <AlertCircle size={18} style={{ flexShrink: 0 }} />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-group mb-4">
+              <label className="form-label" style={{ fontWeight: 600, marginBottom: '8px', display: 'block', fontSize: '14px' }}>Username</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}
+                autoComplete="username"
+              />
+            </div>
+
+            <div className="form-group mb-8">
+              <label className="form-label" style={{ fontWeight: 600, marginBottom: '8px', display: 'block', fontSize: '14px' }}>Password</label>
+              <input
+                type="password"
+                className="form-input"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                autoComplete="current-password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: '100%', padding: '16px', background: 'var(--brand-primary)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)' }}
               disabled={loading}
-              autoComplete="username"
-            />
+            >
+              {loading ? 'Signing In...' : (
+                <>
+                  Sign In <LogIn size={18} style={{ marginLeft: '8px' }} />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div style={{ marginTop: '32px', fontSize: '15px', color: 'var(--text-secondary)', textAlign: 'center' }}>
+            Don't have an account?{' '}
+            <Link to="/signup" style={{ fontWeight: 600, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+              Create one
+            </Link>
           </div>
-
-          <div className="form-group" style={{ marginBottom: '32px' }}>
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-input"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              autoComplete="current-password"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '14px' }}
-            disabled={loading}
-          >
-            {loading ? 'Signing In...' : (
-              <>
-                <LogIn size={18} />
-                Sign In
-              </>
-            )}
-          </button>
-        </form>
-
-        <div style={{ marginTop: '24px', fontSize: '14px', color: 'var(--text-secondary)' }}>
-          Don't have an account?{' '}
-          <Link to="/signup" style={{ fontWeight: 600, color: 'var(--brand-primary)' }}>
-            Create one
-          </Link>
         </div>
       </div>
     </div>

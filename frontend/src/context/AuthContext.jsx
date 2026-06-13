@@ -55,6 +55,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (username, email, password, isDoctor) => {
+    setLoading(true);
+    try {
+      const endpoint = isDoctor ? 'auth/register/doctor/' : 'auth/register/';
+      await client.post(endpoint, { username, email, password });
+      setLoading(false);
+      return { success: true };
+    } catch (error) {
+      setLoading(false);
+      // Django rest framework usually returns field errors like { username: ["User with this username already exists."] }
+      const errorData = error.response?.data;
+      let errorMessage = 'Registration failed';
+      if (errorData) {
+        if (errorData.error) errorMessage = errorData.error;
+        else if (errorData.detail) errorMessage = errorData.detail;
+        else if (typeof errorData === 'object') {
+          // Get the first error message from the first field
+          const firstKey = Object.keys(errorData)[0];
+          if (Array.isArray(errorData[firstKey])) {
+            errorMessage = errorData[firstKey][0];
+          }
+        }
+      }
+      return {
+        success: false,
+        error: errorMessage,
+      };
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
@@ -64,7 +94,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout, fetchProfile }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout, fetchProfile }}>
       {children}
     </AuthContext.Provider>
   );

@@ -146,6 +146,22 @@ const HomePage = () => {
             </div>
             <h3 style={{ fontSize: '24px', fontWeight: 500, color: 'var(--brand-primary)', marginTop: 'auto' }}>Reminders</h3>
           </Link>
+
+          <Link to="/rentals" className="card card-interactive" style={{ padding: '32px', background: '#fef3c7', textDecoration: 'none', display: 'flex', flexDirection: 'column', minHeight: '220px' }}>
+            <div className="flex-between mb-4">
+              <span className="badge badge-light">Equipment</span>
+              <Truck size={24} color="#d97706" />
+            </div>
+            <h3 style={{ fontSize: '24px', fontWeight: 500, color: '#d97706', marginTop: 'auto' }}>Medical Rentals</h3>
+          </Link>
+
+          <Link to="/ngos" className="card card-interactive" style={{ padding: '32px', background: '#fee2e2', textDecoration: 'none', display: 'flex', flexDirection: 'column', minHeight: '220px' }}>
+            <div className="flex-between mb-4">
+              <span className="badge badge-light">Support</span>
+              <HeartHandshake size={24} color="#dc2626" />
+            </div>
+            <h3 style={{ fontSize: '24px', fontWeight: 500, color: '#dc2626', marginTop: 'auto' }}>Medical Resources</h3>
+          </Link>
           
         </div>
       </div>
